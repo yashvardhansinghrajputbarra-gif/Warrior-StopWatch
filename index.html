@@ -890,7 +890,7 @@
     }
 
     // Interactive Core Tracking State Loop Rules
-    toggleBtn.addEventListener("click", () => {
+    function toggleEngine() {
         evaluateTemporalRollover();
         if (!state.engineActive) {
             state.sessionStartTime = Date.now();
@@ -910,13 +910,15 @@
         }
         saveState();
         updateUIDisplay();
-    });
+    }
 
-    // F1 Key Interception Listener Module
+    toggleBtn.addEventListener("click", toggleEngine);
+
+    // Global Key Listener mapping to the Spacebar Action Matrix
     window.addEventListener("keydown", (e) => {
-        if (e.key === "F1") {
-            e.preventDefault(); // Blocks the native browser help window panel from showing up
-            toggleBtn.click();  // Simulates a user action click on the core session trigger
+        if (e.key === " " || e.code === "Space") {
+            e.preventDefault(); // Blocks native browser layouts from shifting/scrolling downwards
+            toggleEngine();
         }
     });
 
