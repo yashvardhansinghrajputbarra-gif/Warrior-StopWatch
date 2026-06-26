@@ -220,7 +220,7 @@
             border-radius: 99px;
             height: 6px;
             width: 100%;
-            margin-top: 16px;
+            margin-top: 12px;
             overflow: hidden;
         }
         
@@ -494,6 +494,7 @@
         <div class="progress-container">
             <div id="progressBar" class="progress-bar"></div>
         </div>
+        <p id="remainingTargetText" style="margin-top: 8px; margin-bottom: 0; font-size: 11px; color: var(--accent-amber); font-weight: 500;">Remaining: 8h 00m</p>
     </div>
 
     <div class="glass">
@@ -598,6 +599,7 @@
     const progressBar = document.getElementById("progressBar");
     const resetTargetBtn = document.getElementById("resetTargetBtn");
     const hardResetBtn = document.getElementById("hardResetBtn");
+    const remainingTargetText = document.getElementById("remainingTargetText");
 
     // Timeline Visual DOM Mapping Output Nodes
     const timelineDayDisplay = document.getElementById("timelineDayDisplay");
@@ -812,6 +814,16 @@
         let elapsedFormatted = formatProgressElapsedText(totalTimeMs);
         progressText.textContent = `${elapsedFormatted} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
         progressBar.style.width = `${pct}%`;
+
+        // Target Remaining Calculation Engine
+        if (totalTimeMs >= targetMs) {
+            remainingTargetText.textContent = "Goal Achieved! 🎉";
+            remainingTargetText.style.color = "var(--accent-green)";
+        } else {
+            let remainingMs = targetMs - totalTimeMs;
+            remainingTargetText.textContent = `Remaining: ${formatProgressElapsedText(remainingMs)}`;
+            remainingTargetText.style.color = "var(--accent-amber)";
+        }
 
         if (state.shieldActive) {
             shieldDisplay.textContent = "🛡️ Active";
