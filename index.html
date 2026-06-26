@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warrior Neet Focus</title>
+    <title>Warrior Focus Chrono</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230071e3%22 opacity=%220.15%22/><circle cx=%2250%22 cy=%2250%22 r=%2232%22 fill=%22none%22 stroke=%22%230071e3%22 stroke-width=%224.5%22/><circle cx=%2250%22 cy=%2250%22 r=%2214%22 fill=%22%23ff3b30%22/><path d=%22M50 8 L50 22 M50 78 L50 92 M8 50 L22 50 M78 50 L92 50%22 stroke=%22%23ffffff%22 stroke-width=%225.5%22 stroke-linecap=%22round%22/></svg>">
     <style>
         /* Design Variables System mapping original token sheets */
@@ -555,8 +555,8 @@
 </div>
 
 <script>
-    // Exact Static Dates configured to your timeline metrics
-    const START_DATE = new Date(2026, 2, 11, 4, 0, 0); // March 11, 2026
+    // Configured Static Timeline Boundaries
+    const START_DATE = new Date(2026, 2, 14, 4, 0, 0); // Updated to March 14, 2026
     const TARGET_DATE = new Date(2027, 4, 2, 4, 0, 0);  // May 2, 2027
 
     // State Space Definition mapping question log schemas
@@ -908,7 +908,7 @@
                 timestamp: lastRollover.getTime()
             });
 
-            // Re-initialize core focus state array spaces
+            // Re-initialize focus state metrics space
             state.accumulatedTime = 0;
             state.sessionStartTime = Date.now();
             state.lastRolloverTimestamp = Date.now();
@@ -969,8 +969,8 @@
     // F1 Key Interception Listener Module
     window.addEventListener("keydown", (e) => {
         if (e.key === "F1") {
-            e.preventDefault(); // Blocks the native browser help window panel from showing up
-            toggleBtn.click();  // Simulates a user action click on the core session trigger
+            e.preventDefault(); // Blocks native fallback window popup systems
+            toggleBtn.click();  // Fires session core tracking toggles
         }
     });
 
