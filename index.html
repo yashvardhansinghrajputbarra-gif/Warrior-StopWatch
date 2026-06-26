@@ -444,7 +444,7 @@
             <button class="stepper-btn" id="incTargetBtn">+</button>
         </div>
 
-        <p id="progressText" style="margin-top: 14px; margin-bottom: 0; font-size: 12px; color: var(--text-secondary);">0.00 / 8h 00m (0%)</p>
+        <p id="progressText" style="margin-top: 14px; margin-bottom: 0; font-size: 12px; color: var(--text-secondary);">0m / 8h 00m (0%)</p>
         <div class="progress-container">
             <div id="progressBar" class="progress-bar"></div>
         </div>
@@ -571,6 +571,17 @@
         let mins = Math.round((hoursVal - hrs) * 60);
         let mmStr = mins.toString().padStart(2, '0');
         return `${hrs}h ${mmStr}m`;
+    }
+
+    // New format helper to convert Milliseconds into scannable clean text configurations
+    function formatProgressElapsedText(ticks) {
+        let totalMinutes = Math.floor(ticks / 60000);
+        if (totalMinutes < 60) {
+            return `${totalMinutes}m`;
+        }
+        let hrs = Math.floor(totalMinutes / 60);
+        let mins = totalMinutes % 60;
+        return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
     }
 
     function formatTimeMatrix(ticks) {
@@ -744,10 +755,11 @@
         decTargetBtn.disabled = (state.targetHours <= 5);
 
         let targetMs = state.targetHours * 60 * 60 * 1000;
-        let elapsedHours = totalTimeMs / (1000 * 60 * 60);
         let pct = Math.min(100, (totalTimeMs / targetMs) * 100);
         
-        progressText.textContent = `${elapsedHours.toFixed(2)} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
+        // Fixed elapsed notation framework here to use user-friendly text tokens
+        let elapsedFormatted = formatProgressElapsedText(totalTimeMs);
+        progressText.textContent = `${elapsedFormatted} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
         progressBar.style.width = `${pct}%`;
 
         if (state.shieldActive) {
