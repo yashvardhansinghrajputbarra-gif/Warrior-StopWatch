@@ -900,6 +900,14 @@
         updateUIDisplay();
     });
 
+    // F1 Key Interception Listener Module
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "F1") {
+            e.preventDefault(); // Blocks the native browser help window panel from showing up
+            toggleBtn.click();  // Simulates a user action click on the core session trigger
+        }
+    });
+
     // Reset Engine Logic Action
     resetEngineBtn.addEventListener("click", () => {
         if (confirm("Are you sure you want to reset the current day's focus time? This cannot be undone.")) {
