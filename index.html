@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warrior Focus Chrono</title>
+    <title>Warrior Neet Focus</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230071e3%22 opacity=%220.15%22/><circle cx=%2250%22 cy=%2250%22 r=%2232%22 fill=%22none%22 stroke=%22%230071e3%22 stroke-width=%224.5%22/><circle cx=%2250%22 cy=%2250%22 r=%2214%22 fill=%22%23ff3b30%22/><path d=%22M50 8 L50 22 M50 78 L50 92 M8 50 L22 50 M78 50 L92 50%22 stroke=%22%23ffffff%22 stroke-width=%225.5%22 stroke-linecap=%22round%22/></svg>">
     <style>
         /* Design Variables System mapping original token sheets */
@@ -92,7 +92,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 22px;
             margin-bottom: 28px;
         }
@@ -148,6 +148,25 @@
             margin-bottom: 16px;
         }
         .target-header h3 { margin: 0; }
+
+        /* Timeline Box Header Styles */
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .timeline-header h3 { margin: 0; }
+        .live-badge {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            padding: 3px 10px;
+            border-radius: 99px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
 
         /* Custom Custom Stepper Interface Framework */
         .stepper-container {
@@ -219,6 +238,17 @@
             letter-spacing: -1px;
             color: var(--text-primary);
             margin-bottom: 12px;
+        }
+
+        .timeline-body-wrapper {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        .days-left-notation {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-secondary);
         }
 
         .sub-metric {
@@ -419,7 +449,8 @@
 
         .void-message { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 0; letter-spacing: 0.2px; width: 100%; grid-column: span 3; }
 
-        @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 1fr); } .analytics-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1400px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1250px) { .analytics-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 1100px) { .cards-list-layout { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 700px) { .grid, .analytics-grid { grid-template-columns: 1fr; } .cards-list-layout { grid-template-columns: 1fr; } .drawer-content { width: 100%; padding: 20px; } }
     </style>
@@ -432,6 +463,18 @@
 </div>
 
 <div class="grid">
+    <div class="glass">
+        <div class="timeline-header">
+            <h3>📅 Timeline</h3>
+            <span class="live-badge">LIVE</span>
+        </div>
+        <div class="timeline-body-wrapper">
+            <div class="num" id="timelineDayDisplay" style="margin-bottom: 0;">Day 0</div>
+            <div class="days-left-notation" id="timelineRemainingDisplay">(0 Days Left)</div>
+        </div>
+        <p class="sub-metric" id="timelineDateDisplay" style="margin-top: 14px;">---</p>
+    </div>
+
     <div class="glass">
         <div class="target-header">
             <h3>⏱️ Hour Target</h3>
@@ -553,6 +596,11 @@
     const resetTargetBtn = document.getElementById("resetTargetBtn");
     const hardResetBtn = document.getElementById("hardResetBtn");
 
+    // Timeline Visual DOM Mapping Output Nodes
+    const timelineDayDisplay = document.getElementById("timelineDayDisplay");
+    const timelineRemainingDisplay = document.getElementById("timelineRemainingDisplay");
+    const timelineDateDisplay = document.getElementById("timelineDateDisplay");
+
     // Analytics Reference Nodes
     const peakDisplay = document.getElementById("peakDisplay");
     const peakSubText = document.getElementById("peakSubText");
@@ -634,8 +682,8 @@
         let daysRemaining = Math.ceil(diffTarget / (1000 * 60 * 60 * 24));
         if (daysRemaining < 0) daysRemaining = 0;
 
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        let dateStr = now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear();
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        let dateStr = months[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear();
 
         return { currentDayNum, daysRemaining, dateStr };
     }
@@ -772,6 +820,12 @@
             shieldSubText.textContent = "Streak Protection Node";
         }
 
+        // Live Dynamic updates targeting timeline panel box elements
+        let timeline = getTrackerTimelineMetrics();
+        timelineDayDisplay.textContent = `Day ${timeline.currentDayNum}`;
+        timelineRemainingDisplay.textContent = `(${timeline.daysRemaining} Days Left)`;
+        timelineDateDisplay.textContent = timeline.dateStr;
+
         // Keep core performance metrics aligned dynamically
         updateAnalyticsPanel();
     }
@@ -890,7 +944,7 @@
     }
 
     // Interactive Core Tracking State Loop Rules
-    function toggleEngine() {
+    toggleBtn.addEventListener("click", () => {
         evaluateTemporalRollover();
         if (!state.engineActive) {
             state.sessionStartTime = Date.now();
@@ -910,15 +964,13 @@
         }
         saveState();
         updateUIDisplay();
-    }
+    });
 
-    toggleBtn.addEventListener("click", toggleEngine);
-
-    // Global Key Listener mapping to the Spacebar Action Matrix
+    // F1 Key Interception Listener Module
     window.addEventListener("keydown", (e) => {
-        if (e.key === " " || e.code === "Space") {
-            e.preventDefault(); // Blocks native browser layouts from shifting/scrolling downwards
-            toggleEngine();
+        if (e.key === "F1") {
+            e.preventDefault(); // Blocks the native browser help window panel from showing up
+            toggleBtn.click();  // Simulates a user action click on the core session trigger
         }
     });
 
