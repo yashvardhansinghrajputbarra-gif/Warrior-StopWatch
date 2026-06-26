@@ -573,17 +573,6 @@
         return `${hrs}h ${mmStr}m`;
     }
 
-    // New format helper to convert Milliseconds into scannable clean text configurations
-    function formatProgressElapsedText(ticks) {
-        let totalMinutes = Math.floor(ticks / 60000);
-        if (totalMinutes < 60) {
-            return `${totalMinutes}m`;
-        }
-        let hrs = Math.floor(totalMinutes / 60);
-        let mins = totalMinutes % 60;
-        return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
-    }
-
     function formatTimeMatrix(ticks) {
         let hours = Math.floor(ticks / 3600000);
         let minutes = Math.floor((ticks % 3600000) / 60000);
@@ -755,11 +744,10 @@
         decTargetBtn.disabled = (state.targetHours <= 5);
 
         let targetMs = state.targetHours * 60 * 60 * 1000;
+        let elapsedHours = totalTimeMs / (1000 * 60 * 60);
         let pct = Math.min(100, (totalTimeMs / targetMs) * 100);
         
-        // Fixed elapsed notation framework here to use user-friendly text tokens
-        let elapsedFormatted = formatProgressElapsedText(totalTimeMs);
-        progressText.textContent = `${elapsedFormatted} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
+        progressText.textContent = `${elapsedHours.toFixed(2)} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
         progressBar.style.width = `${pct}%`;
 
         if (state.shieldActive) {
@@ -889,8 +877,8 @@
         });
     }
 
-    // Interactive Core Tracking State Loop Rules
-    toggleBtn.addEventListener("click", () => {
+    // Core function to toggle engine tracking activity execution states
+    function handleToggleEngine() {
         evaluateTemporalRollover();
         if (!state.engineActive) {
             state.sessionStartTime = Date.now();
@@ -910,13 +898,17 @@
         }
         saveState();
         updateUIDisplay();
-    });
+    }
 
-    // F1 Key Interception Listener Module
+    // Interactive Core Tracking State Loop Rules
+    toggleBtn.addEventListener("click", handleToggleEngine);
+
+    // Global Key Listener mapping to the Spacebar Action Matrix
     window.addEventListener("keydown", (e) => {
-        if (e.key === "F1") {
-            e.preventDefault(); // Blocks the native browser help window panel from showing up
-            toggleBtn.click();  // Simulates a user action click on the core session trigger
+        if (e.key === ' ' || e.code === 'Space') {
+            // Prevent workspace structural page jumps/scrolling standard layouts
+            e.preventDefault();
+            handleToggleEngine();
         }
     });
 
