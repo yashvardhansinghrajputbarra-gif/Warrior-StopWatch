@@ -285,7 +285,7 @@
             flex-direction: column;
             align-items: center;
             gap: 12px;
-            max-width: 400px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
@@ -320,6 +320,33 @@
         
         button.halt-active { background: rgba(255, 59, 48, 0.15); border-color: rgba(255, 59, 48, 0.2); color: #ff453a; }
         button.halt-active:hover { background: rgba(255, 59, 48, 0.25); border-color: rgba(255, 59, 48, 0.3); }
+
+        button.submit-day-btn {
+            background: var(--accent-green);
+            color: #ffffff;
+            border: none;
+            font-weight: 600;
+            padding: 12px 28px;
+            font-size: 14px;
+        }
+        button.submit-day-btn:hover {
+            background: #2fb54f;
+        }
+        button.submit-day-btn:disabled {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .lockdown-warning {
+            color: var(--accent-amber);
+            font-size: 12px;
+            font-weight: 500;
+            margin-top: 4px;
+            display: none;
+        }
 
         button.reset-engine-btn {
             background: transparent;
@@ -516,8 +543,10 @@
     <div class="controls-cluster">
         <div class="action-row">
             <button id="toggleBtn" class="run-active">▶ Start Session</button>
+            <button id="submitDayBtn" class="submit-day-btn">📤 Submit & End Day</button>
         </div>
-        <button id="resetEngineBtn" class="reset-engine-btn">🔄 Reset Current Day Session</button>
+        <div id="lockdownWarning" class="lockdown-warning">⚠️ System locked. New day tracking unlocks at 12:00 Midnight.</div>
+        <button id="resetEngineBtn" class="reset-engine-btn" style="margin-top: 8px;">🔄 Reset Current Day Session</button>
     </div>
 </div>
 
@@ -577,6 +606,8 @@
         if (state.lastRolloverTimestamp === undefined) {
             state.lastRolloverTimestamp = Date.now();
         }
+        // Anti-cheat manual submission system tracking node
+        if (state.dayIsSubmitted === undefined) state.dayIsSubmitted = false;
     }
     initFallbackState();
 
@@ -585,6 +616,8 @@
     // DOM Reference Registry
     const chronoDisplay = document.getElementById("chronoDisplay");
     const toggleBtn = document.getElementById("toggleBtn");
+    const submitDayBtn = document.getElementById("submitDayBtn");
+    const lockdownWarning = document.getElementById("lockdownWarning");
     const resetEngineBtn = document.getElementById("resetEngineBtn");
     const streakDisplay = document.getElementById("streakDisplay");
     const shieldDisplay = document.getElementById("shieldDisplay");
@@ -671,7 +704,7 @@
     function getTrackerTimelineMetrics() {
         let now = new Date();
         
-        // 4 AM Shift processing matching Base Code rules
+        // Tracking logical shift processing offset values
         let targetNow = new Date(now.getTime());
         if (now.getHours() < 4) {
             targetNow.setDate(targetNow.getDate() - 1);
@@ -696,7 +729,6 @@
         let logs = state.historyLogs || [];
         let now = new Date();
         
-        // Adjust for 4 AM shift logic context windowing
         let currentAnchor = new Date(now.getTime());
         if (now.getHours() < 4) {
             currentAnchor.setDate(currentAnchor.getDate() - 1);
@@ -725,7 +757,6 @@
         peakDisplay.textContent = `${(maxMs / 3600000).toFixed(2)}h`;
         peakSubText.textContent = `Achieved on ${peakDayStr}`;
 
-        // Helpers to isolate contextual date metrics across historical log slots
         function extractLogDate(logItem) {
             if(logItem.timestamp) return new Date(logItem.timestamp);
             return new Date(Date.parse(logItem.dateStr + " " + now.getFullYear()) || Date.now());
@@ -734,7 +765,7 @@
         function getStartOfWeek(dateObj) {
             let d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
             let day = d.getDay();
-            let diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday initialization rule standard
+            let diff = d.getDate() - day + (day === 0 ? -6 : 1); 
             return new Date(d.setDate(diff));
         }
 
@@ -798,17 +829,14 @@
         
         streakDisplay.textContent = state.streak;
 
-        // Force min-limit constraint verification engine blocks
         if (state.targetHours < 5) state.targetHours = 5;
 
-        // Custom Stepper display and state modifier rendering logic
         targetHoursValDisplay.textContent = formatTargetHoursText(state.targetHours);
         decTargetBtn.disabled = (state.targetHours <= 5);
 
         let targetMs = state.targetHours * 60 * 60 * 1000;
         let pct = Math.min(100, (totalTimeMs / targetMs) * 100);
         
-        // Fixed elapsed notation framework here to use user-friendly text tokens
         let elapsedFormatted = formatProgressElapsedText(totalTimeMs);
         progressText.textContent = `${elapsedFormatted} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
         progressBar.style.width = `${pct}%`;
@@ -823,17 +851,35 @@
             shieldSubText.textContent = "Streak Protection Node";
         }
 
-        // Live Dynamic updates targeting timeline panel box elements
         let timeline = getTrackerTimelineMetrics();
         timelineDayDisplay.textContent = `Day ${timeline.currentDayNum}`;
         timelineRemainingDisplay.textContent = `(${timeline.daysRemaining} Days Left)`;
         timelineDateDisplay.textContent = timeline.dateStr;
 
-        // Keep core performance metrics aligned dynamically
+        // Anti-Cheat Safety Validation Interface Switches
+        if (state.dayIsSubmitted) {
+            toggleBtn.disabled = true;
+            toggleBtn.textContent = "🔒 Session Locked";
+            toggleBtn.className = "reset-engine-btn";
+            submitDayBtn.disabled = true;
+            lockdownWarning.style.display = "block";
+        } else {
+            toggleBtn.disabled = false;
+            lockdownWarning.style.display = "none";
+            submitDayBtn.disabled = false;
+            if (state.engineActive) {
+                toggleBtn.textContent = "⏸ Stop Block";
+                toggleBtn.className = "halt-active";
+            } else {
+                toggleBtn.textContent = "▶ Start Session";
+                toggleBtn.className = "run-active";
+            }
+        }
+
         updateAnalyticsPanel();
     }
 
-    // Interactivity Control Systems for the Step Tracker Configuration Layouts
+    // Interactivity Control Systems for the Step Tracker Configurations
     decTargetBtn.addEventListener("click", () => {
         if (state.targetHours > 5) {
             state.targetHours = Math.max(5, state.targetHours - 0.5);
@@ -854,78 +900,148 @@
         updateUIDisplay();
     });
 
-    // 4 AM Temporal Engine Rollover Module
+    // 4 AM Core Hard Rollover & Anti-Cheat Cooldown Checker Modules
     function evaluateTemporalRollover() {
         let now = new Date();
+        let hrs = now.getHours();
+
+        // Rule 1: Reset the anti-cheat lockdown at midnight if previously submitted early
+        if (state.dayIsSubmitted && hrs >= 0 && hrs < 4) {
+            // It is past midnight but before 4 AM. Clean reset to start a fresh day early!
+            state.dayIsSubmitted = false;
+            state.accumulatedTime = 0;
+            state.engineActive = false;
+            state.sessionStartTime = 0;
+            state.lastRolloverTimestamp = Date.now();
+            saveState();
+            updateUIDisplay();
+        } 
+        else if (state.dayIsSubmitted && hrs >= 4) {
+            // It is after 4 AM, so we can clear the block anyway to keep timeline continuity going
+            state.dayIsSubmitted = false;
+            state.accumulatedTime = 0;
+            state.engineActive = false;
+            state.sessionStartTime = 0;
+            state.lastRolloverTimestamp = Date.now();
+            saveState();
+            updateUIDisplay();
+        }
+
+        // Rule 2: Hard Fallback Rollover if user falls asleep completely without clicking submit
         let lastRollover = new Date(state.lastRolloverTimestamp);
-        
-        // Calculate the boundary threshold date representing the last recorded day's 4 AM
         let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 4, 0, 0, 0, 0);
         if (lastRollover.getHours() < 4) {
             boundary.setDate(boundary.getDate() - 1);
         }
 
-        // Calculate the target rollover boundary for the current timeline context
         let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0, 0);
         if (now.getHours() < 4) {
             currentBoundary.setDate(currentBoundary.getDate() - 1);
         }
 
         if (currentBoundary.getTime() > boundary.getTime()) {
-            let durationLogged = computeCurrentSessionDuration();
-            let matrix = formatTimeMatrix(durationLogged);
-            let timeString = `${matrix.body}${matrix.decimal}`;
-            
-            let currentTargetMs = state.targetHours * 60 * 60 * 1000;
-            let passedTarget = durationLogged >= currentTargetMs;
-
-            let badgeType = "badge-critical";
-            let badgeText = "Failed";
-
-            // Historical calculation values matching layout
-            let timeline = getTrackerTimelineMetrics();
-
-            if (passedTarget) {
-                state.streak++;
-                state.shieldActive = false; // Reset shield since goal was hit successfully
-                badgeType = "badge-elite";
-                badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
+            // User went past 4 AM without clicking submit. Auto-process previous tracking frame.
+            if (!state.dayIsSubmitted) {
+                executeDaySubmission(true); // Auto-submit run trigger flag
             } else {
-                if (state.shieldActive) {
-                    state.shieldActive = false;
-                    badgeType = "badge-amber";
-                    badgeText = "Shielded";
-                } else {
-                    state.streak = 0;
-                    state.shieldActive = true; // Trigger shield activation eligibility for the subsequent cycle
-                }
+                state.dayIsSubmitted = false;
+                state.accumulatedTime = 0;
+                state.engineActive = false;
+                state.sessionStartTime = 0;
+                state.lastRolloverTimestamp = Date.now();
+                saveState();
+                updateUIDisplay();
             }
-
-            // Log entry creation with explicit system tracking timestamps
-            state.historyLogs.unshift({
-                day: timeline.currentDayNum - 1, // Log for the completed day block
-                dateStr: lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                durationText: timeString,
-                statusBadgeClass: badgeType,
-                statusText: badgeText,
-                timestamp: lastRollover.getTime()
-            });
-
-            // Re-initialize focus state metrics space
-            state.accumulatedTime = 0;
-            state.sessionStartTime = Date.now();
-            state.lastRolloverTimestamp = Date.now();
-            
-            saveState();
-            updateUIDisplay();
-            renderVaultDrawer();
         }
     }
+
+    // Core Business Logic Module processing Day Execution Submission Pools
+    function executeDaySubmission(isAutoFallback = false) {
+        // Stop current active sessions gracefully
+        if (state.engineActive) {
+            state.accumulatedTime += (Date.now() - state.sessionStartTime);
+            state.engineActive = false;
+        }
+
+        let durationLogged = state.accumulatedTime;
+        let matrix = formatTimeMatrix(durationLogged);
+        let timeString = `${matrix.body}${matrix.decimal}`;
+        
+        let currentTargetMs = state.targetHours * 60 * 60 * 1000;
+        let passedTarget = durationLogged >= currentTargetMs;
+
+        let badgeType = "badge-critical";
+        let badgeText = "Failed";
+
+        let timeline = getTrackerTimelineMetrics();
+        let adjustedDayNum = timeline.currentDayNum;
+        
+        // If it's early morning overtime submission, log it cleanly against the logical day just passed
+        let now = new Date();
+        if (now.getHours() < 4 && !isAutoFallback) {
+            adjustedDayNum = Math.max(1, timeline.currentDayNum);
+        }
+
+        if (passedTarget) {
+            state.streak++;
+            state.shieldActive = false; 
+            badgeType = "badge-elite";
+            badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
+        } else {
+            if (state.shieldActive) {
+                state.shieldActive = false;
+                badgeType = "badge-amber";
+                badgeText = "Shielded";
+            } else {
+                state.streak = 0;
+                state.shieldActive = true; 
+            }
+        }
+
+        // Log entry creation inside vault array records
+        state.historyLogs.unshift({
+            day: adjustedDayNum,
+            dateStr: new Date(state.lastRolloverTimestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+            durationText: timeString,
+            statusBadgeClass: badgeType,
+            statusText: badgeText,
+            timestamp: state.lastRolloverTimestamp
+        });
+
+        // Anti-Cheat Window Assignment Matrix
+        let systemHours = now.getHours();
+        if (systemHours >= 0 && systemHours < 4) {
+            // Submitting past midnight (Overtime mode) -> Day clears cleanly instantly with zero cooldown lock!
+            state.dayIsSubmitted = false;
+            state.accumulatedTime = 0;
+            state.sessionStartTime = 0;
+            state.lastRolloverTimestamp = Date.now();
+        } else {
+            // Submitting early (before midnight) -> Activate strict lockdown system
+            state.dayIsSubmitted = true;
+            state.accumulatedTime = durationLogged; // freeze time display frame
+        }
+        
+        saveState();
+        updateUIDisplay();
+        renderVaultDrawer();
+    }
+
+    // Interaction Trigger Hooking
+    submitDayBtn.addEventListener("click", () => {
+        let currentTotal = computeCurrentSessionDuration();
+        let formattedStr = formatProgressElapsedText(currentTotal);
+        
+        let confirmation = confirm(`📤 SUBMIT FOCUS DAY RECORD?\n\nTotal focus time achieved: ${formattedStr}.\n\nAre you sure you want to finalize and end the ongoing tracking day?`);
+        if (confirmation) {
+            executeDaySubmission(false);
+        }
+    });
 
     function renderVaultDrawer() {
         vaultCardsContainer.innerHTML = "";
         if (!state.historyLogs || state.historyLogs.length === 0) {
-            vaultCardsContainer.innerHTML = `<div class="void-message">No historical logs archived inside the Performance Vault yet. Tracking resets daily at 4:00 AM.</div>`;
+            vaultCardsContainer.innerHTML = `<div class="void-message">No historical logs archived inside the Performance Vault yet. Manual daily submissions are saved inside this grid block.</div>`;
             return;
         }
 
@@ -949,11 +1065,11 @@
     // Interactive Core Tracking State Loop Rules
     function toggleSession() {
         evaluateTemporalRollover();
+        if (state.dayIsSubmitted) return; // Prevent activation under anti-cheat rules
+
         if (!state.engineActive) {
             state.sessionStartTime = Date.now();
             state.engineActive = true;
-            toggleBtn.textContent = "⏸ Stop Block";
-            toggleBtn.className = "halt-active";
             mainLoopInterval = setInterval(() => {
                 evaluateTemporalRollover();
                 updateUIDisplay();
@@ -961,8 +1077,6 @@
         } else {
             state.accumulatedTime += (Date.now() - state.sessionStartTime);
             state.engineActive = false;
-            toggleBtn.textContent = "▶ Start Session";
-            toggleBtn.className = "run-active";
             clearInterval(mainLoopInterval);
         }
         saveState();
@@ -973,18 +1087,15 @@
 
     // Global Key Interception Listener Module (F1 & Spacebar Shortcuts)
     window.addEventListener("keydown", (e) => {
-        // Handle F1 hotkey definition shortcut logic
         if (e.key === "F1") {
             e.preventDefault(); 
             toggleSession();
         }
         
-        // Handle Spacebar layout execution activation toggles
         if (e.key === " " || e.code === "Space") {
-            // Safety measure: ignore shortcut trigger if user is actively writing inside an input or button interaction component zone
             const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
             if (activeTag !== "input" && activeTag !== "textarea" && activeTag !== "button") {
-                e.preventDefault(); // Prevents default browser page jumping / layout scrolling behaviors
+                e.preventDefault(); 
                 toggleSession();
             }
         }
@@ -992,14 +1103,13 @@
 
     // Reset Engine Logic Action
     resetEngineBtn.addEventListener("click", () => {
+        if (state.dayIsSubmitted) return;
         if (confirm("Are you sure you want to reset the current day's focus time? This cannot be undone.")) {
             state.accumulatedTime = 0;
             state.engineActive = false;
             state.sessionStartTime = 0;
             
             clearInterval(mainLoopInterval);
-            toggleBtn.textContent = "▶ Start Session";
-            toggleBtn.className = "run-active";
             
             saveState();
             updateUIDisplay();
@@ -1013,9 +1123,6 @@
             localStorage.removeItem("warrior_chrono_state");
             state = {};
             initFallbackState();
-            
-            toggleBtn.textContent = "▶ Start Session";
-            toggleBtn.className = "run-active";
             
             vaultDrawer.style.display = "none";
             vaultDrawer.classList.remove("active");
@@ -1043,9 +1150,7 @@
     evaluateTemporalRollover();
     updateUIDisplay();
 
-    if (state.engineActive) {
-        toggleBtn.textContent = "⏸ Stop Block";
-        toggleBtn.className = "halt-active";
+    if (state.engineActive && !state.dayIsSubmitted) {
         mainLoopInterval = setInterval(() => {
             evaluateTemporalRollover();
             updateUIDisplay();
