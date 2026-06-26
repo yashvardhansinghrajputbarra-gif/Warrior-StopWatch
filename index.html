@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warrior Focus Chrono</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230071e3%22 opacity=%220.15%22/><circle cx=%2250%22 cy=%2250%22 r=%2232%22 fill=%22none%22 stroke=%22%230071e3%22 stroke-width=%224.5%22/><circle cx=%2250%22 cy=%2250%22 r=%2214%22 fill=%22%23ff3b30%22/><path d=%22M50 8 L50 22 M50 78 L50 92 M8 50 L22 50 M78 50 L92 50%22 stroke=%22%23ffffff%22 stroke-width=%225.5%22 stroke-linecap=%22round%22/></svg>">
+    <style>
+        /* Design Variables System mapping original token sheets */
+        :root {
+            --apple-glass: rgba(22, 22, 30, 0.45);
+            --apple-glass-hover: rgba(32, 32, 45, 0.55);
+            --apple-border: rgba(255, 255, 255, 0.12);
+            --apple-border-hover: rgba(255, 255, 255, 0.22);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.65);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --accent-blue: #0071e3;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
+            --accent-amber: #ff9500;
+        }
+
+        body {
+            margin: 0;
+            background: #0d0f14;
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            padding: 40px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: -10%;
+            left: -10%;
+            width: 120%;
+            height: 120%;
+            background: 
+                radial-gradient(circle at 20% 30%, #1e2942 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, #16222f 0%, transparent 45%),
+                radial-gradient(circle at 50% 80%, #111a2e 0%, transparent 50%),
+                radial-gradient(circle at 85% 75%, #25354e 0%, transparent 35%);
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(100,125,165,0.18) 0%, rgba(0,0,0,0) 70%);
+            top: 20%;
+            right: 10%;
+            z-index: -1;
+            filter: blur(40px);
+            animation: fluidFloat 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes fluidFloat {
+            0% { transform: translateY(0px) scale(1); }
+            100% { transform: translateY(40px) scale(1.1); }
+        }
+
+        .glass {
+            background: var(--apple-glass);
+            backdrop-filter: blur(35px) saturate(160%);
+            -webkit-backdrop-filter: blur(35px) saturate(160%);
+            border: 1px solid var(--apple-border);
+            border-radius: 22px;
+            padding: 26px;
+            position: relative;
+            box-sizing: border-box;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass:hover {
+            transform: translateY(-2px);
+            background: var(--apple-glass-hover);
+            border-color: var(--apple-border-hover);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-bottom: 28px;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 6px;
+        }
+
+        .title-container { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            margin-bottom: 36px;
+        }
+
+        h1 { 
+            margin: 0; 
+            font-size: 30px;
+            font-weight: 700; 
+            letter-spacing: -0.5px; 
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2.vault-title { 
+            font-size: 22px;
+            font-weight: 700; 
+            letter-spacing: -0.5px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: -0.1px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .target-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        .target-header h3 { margin: 0; }
+
+        /* Custom Custom Stepper Interface Framework */
+        .stepper-container {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 4px;
+            justify-content: space-between;
+            box-sizing: border-box;
+            height: 42px;
+        }
+        .stepper-container:focus-within {
+            border-color: var(--accent-blue);
+            background: rgba(0, 0, 0, 0.35);
+        }
+        .stepper-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            padding: 0;
+            transition: background 0.2s ease;
+        }
+        .stepper-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .stepper-btn:disabled {
+            color: var(--text-muted);
+            cursor: not-allowed;
+            background: transparent;
+        }
+        .stepper-value {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            user-select: none;
+        }
+
+        .progress-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 99px;
+            height: 6px;
+            width: 100%;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #0071e3, #34c759);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 99px;
+        }
+
+        .num {
+            font-size: 46px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .sub-metric {
+            margin-top: 2px;
+            margin-bottom: 0;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .chrono-engine-container {
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+            font-size: 68px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            color: var(--text-primary);
+            margin: 24px 0;
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+        }
+
+        .chrono-ms {
+            font-size: 38px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-left: 2px;
+        }
+
+        .controls-cluster {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .action-row {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            width: 100%;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            padding: 10px 22px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.18); 
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        button:active { transform: scale(0.96); }
+
+        button.run-active { background: var(--accent-blue); border: none; }
+        button.run-active:hover { background: #0077ed; }
+        
+        button.halt-active { background: rgba(255, 59, 48, 0.15); border-color: rgba(255, 59, 48, 0.2); color: #ff453a; }
+        button.halt-active:hover { background: rgba(255, 59, 48, 0.25); border-color: rgba(255, 59, 48, 0.3); }
+
+        button.reset-engine-btn {
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 500;
+            padding: 6px 16px;
+            border-radius: 99px;
+            transition: all 0.2s ease;
+        }
+        button.reset-engine-btn:hover {
+            background: rgba(255, 59, 48, 0.1);
+            border-color: rgba(255, 59, 48, 0.3);
+            color: #ff453a;
+        }
+
+        button.reset-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 4px 12px;
+            font-size: 11px;
+            border-radius: 99px;
+            margin: 0;
+        }
+        button.reset-btn:hover {
+            background: rgba(255, 59, 48, 0.15);
+            border-color: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+        }
+
+        button.hard-reset-btn {
+            background: rgba(255, 59, 48, 0.1);
+            color: #ff453a;
+            border: 1px solid rgba(255, 59, 48, 0.25);
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 99px;
+        }
+        button.hard-reset-btn:hover {
+            background: rgba(255, 59, 48, 0.25);
+            border-color: rgba(255, 59, 48, 0.4);
+        }
+
+        .history-trigger {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 99px;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .history-trigger:hover {
+            background: rgba(255, 255, 255, 0.16);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Vault Sliding Drawer System Styles */
+        .drawer-backdrop { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.3); 
+            backdrop-filter: blur(0px); 
+            -webkit-backdrop-filter: blur(0px); 
+            z-index: 2000;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        .drawer-backdrop.active { 
+            display: block; 
+            backdrop-filter: blur(25px); 
+            -webkit-backdrop-filter: blur(25px); 
+        }
+        .drawer-content { 
+            position: fixed; 
+            top: 0; 
+            right: -100%;
+            width: 85%; 
+            max-width: 1050px; 
+            height: 100%; 
+            background: rgba(20, 20, 25, 0.85); 
+            box-shadow: -20px 0 50px rgba(0,0,0,0.4); 
+            border-left: 1px solid rgba(255,255,255,0.08);
+            z-index: 2001; 
+            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            overflow-y: auto; 
+            padding: 36px; 
+            box-sizing: border-box;
+        }
+        .drawer-backdrop.active .drawer-content { right: 0; }
+        
+        .vault-container { display: flex; flex-direction: column; gap: 24px; width: 100%; }
+        .glass-panel { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 22px; padding: 26px; box-sizing: border-box; }
+        .header-layout { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 18px; margin-bottom: 22px; gap: 16px; }
+        .header-left-group { display: flex; align-items: center; gap: 18px; }
+        .back-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.05); color: #fff; padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0; }
+        .back-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateX(-2px); }
+        .cards-list-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        
+        .execution-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 18px; padding: 18px; position: relative; transition: all 0.25s ease; }
+        .execution-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+        .card-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-date { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
+        
+        .status-badge { font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 99px; letter-spacing: 0.3px; }
+        .badge-elite { background: rgba(52, 199, 89, 0.15); color: #34c759; }
+        .badge-critical { background: rgba(255, 59, 48, 0.15); color: #ff3b30; }
+        .badge-amber { background: rgba(255, 149, 0, 0.15); color: #ff9500; }
+
+        .card-metrics-block {
+            background: rgba(0, 0, 0, 0.15); padding: 12px; border-radius: 10px; text-align: center;
+        }
+        .card-metrics-block .val { font-size: 20px; font-weight: 700; color: #fff; }
+        .card-metrics-block .label { font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
+
+        .void-message { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 0; letter-spacing: 0.2px; width: 100%; grid-column: span 3; }
+
+        @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 1fr); } .analytics-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 1100px) { .cards-list-layout { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px) { .grid, .analytics-grid { grid-template-columns: 1fr; } .cards-list-layout { grid-template-columns: 1fr; } .drawer-content { width: 100%; padding: 20px; } }
+    </style>
+</head>
+<body>
+
+<div class="title-container">
+    <h1>⚡ Warrior Focus Chrono</h1>
+    <button class="history-trigger" id="openHistoryBtn">🛡️ Performance Vault</button>
+</div>
+
+<div class="grid">
+    <div class="glass">
+        <div class="target-header">
+            <h3>⏱️ Hour Target</h3>
+            <button class="reset-btn" id="resetTargetBtn">Default</button>
+        </div>
+        
+        <div class="stepper-container">
+            <button class="stepper-btn" id="decTargetBtn">−</button>
+            <span class="stepper-value" id="targetHoursValDisplay">8h 00m</span>
+            <button class="stepper-btn" id="incTargetBtn">+</button>
+        </div>
+
+        <p id="progressText" style="margin-top: 14px; margin-bottom: 0; font-size: 12px; color: var(--text-secondary);">0.00 / 8h 00m (0%)</p>
+        <div class="progress-container">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+    </div>
+
+    <div class="glass">
+        <h3>🔥 Current Streak</h3>
+        <div class="num" id="streakDisplay">0</div>
+        <p class="sub-metric">Consecutive Goal Hits</p>
+    </div>
+    
+    <div class="glass">
+        <h3>🛡️ Shield Status</h3>
+        <div class="num" id="shieldDisplay" style="color: var(--text-muted);">Inactive</div>
+        <p class="sub-metric" id="shieldSubText">Streak Protection Node</p>
+    </div>
+</div>
+
+<div class="glass" style="text-align: center; padding: 44px 26px; margin-bottom: 28px;">
+    <h3>⏱️ Core Focus Session Engine</h3>
+    <div class="chrono-engine-container" id="chronoDisplay">00:00:00<span class="chrono-ms">.00</span></div>
+    
+    <div class="controls-cluster">
+        <div class="action-row">
+            <button id="toggleBtn" class="run-active">▶ Start Session</button>
+        </div>
+        <button id="resetEngineBtn" class="reset-engine-btn">🔄 Reset Current Day Session</button>
+    </div>
+</div>
+
+<div id="vaultDrawer" class="drawer-backdrop">
+    <div class="drawer-content">
+        <div class="vault-container">
+            <div class="glass-panel">
+                <div class="header-layout">
+                    <div class="header-left-group">
+                        <button class="back-btn" id="closeVaultBtn">← Tracker</button>
+                        <h2 class="vault-title">🛡️ PERFORMANCE ARCHIVE VAULT</h2>
+                    </div>
+                    <button class="hard-reset-btn" id="hardResetBtn">☢️ Hard Reset System</button>
+                </div>
+
+                <div class="analytics-grid" style="margin-top: 22px;">
+                    <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
+                        <h3 style="font-size: 11px; margin-bottom: 8px;">👑 Peak Session</h3>
+                        <div class="num" id="peakDisplay" style="font-size: 28px; margin-bottom: 4px;">0.00h</div>
+                        <p class="sub-metric" id="peakSubText" style="font-size: 11px;">Highest Focus Record</p>
+                    </div>
+                    <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
+                        <h3 style="font-size: 11px; margin-bottom: 8px;">📊 Weekly Aggregate</h3>
+                        <div class="num" id="weeklyDisplay" style="font-size: 28px; margin-bottom: 4px;">0.00h</div>
+                        <p class="sub-metric" id="weeklySubText" style="font-size: 11px;">Current vs Last Week</p>
+                    </div>
+                    <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
+                        <h3 style="font-size: 11px; margin-bottom: 8px;">📈 Monthly Aggregate</h3>
+                        <div class="num" id="monthlyDisplay" style="font-size: 28px; margin-bottom: 4px;">0.00h</div>
+                        <p class="sub-metric" id="monthlySubText" style="font-size: 11px;">Current vs Last Month</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cards-list-layout" id="vaultCardsContainer"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Exact Static Dates configured to your timeline metrics
+    const START_DATE = new Date(2026, 2, 11, 4, 0, 0); // March 11, 2026
+    const TARGET_DATE = new Date(2027, 4, 2, 4, 0, 0);  // May 2, 2027
+
+    // State Space Definition mapping question log schemas
+    let state = JSON.parse(localStorage.getItem("warrior_chrono_state") || "{}");
+    
+    // Fallback Initializer Framework
+    function initFallbackState() {
+        if (state.streak === undefined) state.streak = 0;
+        if (state.shieldActive === undefined) state.shieldActive = false;
+        if (state.accumulatedTime === undefined) state.accumulatedTime = 0;
+        if (state.engineActive === undefined) state.engineActive = false;
+        if (state.sessionStartTime === undefined) state.sessionStartTime = 0;
+        if (state.historyLogs === undefined) state.historyLogs = [];
+        if (state.targetHours === undefined) state.targetHours = 8; 
+        if (state.lastRolloverTimestamp === undefined) {
+            state.lastRolloverTimestamp = Date.now();
+        }
+    }
+    initFallbackState();
+
+    let mainLoopInterval = null;
+
+    // DOM Reference Registry
+    const chronoDisplay = document.getElementById("chronoDisplay");
+    const toggleBtn = document.getElementById("toggleBtn");
+    const resetEngineBtn = document.getElementById("resetEngineBtn");
+    const streakDisplay = document.getElementById("streakDisplay");
+    const shieldDisplay = document.getElementById("shieldDisplay");
+    const shieldSubText = document.getElementById("shieldSubText");
+    const vaultDrawer = document.getElementById("vaultDrawer");
+    const vaultCardsContainer = document.getElementById("vaultCardsContainer");
+    const targetHoursValDisplay = document.getElementById("targetHoursValDisplay");
+    const decTargetBtn = document.getElementById("decTargetBtn");
+    const incTargetBtn = document.getElementById("incTargetBtn");
+    const progressText = document.getElementById("progressText");
+    const progressBar = document.getElementById("progressBar");
+    const resetTargetBtn = document.getElementById("resetTargetBtn");
+    const hardResetBtn = document.getElementById("hardResetBtn");
+
+    // Analytics Reference Nodes
+    const peakDisplay = document.getElementById("peakDisplay");
+    const peakSubText = document.getElementById("peakSubText");
+    const weeklyDisplay = document.getElementById("weeklyDisplay");
+    const weeklySubText = document.getElementById("weeklySubText");
+    const monthlyDisplay = document.getElementById("monthlyDisplay");
+    const monthlySubText = document.getElementById("monthlySubText");
+
+    function saveState() {
+        localStorage.setItem("warrior_chrono_state", JSON.stringify(state));
+    }
+
+    // Convert hour decimal numbers into precise human readable string mapping (e.g. 5.5 -> "5h 30m")
+    function formatTargetHoursText(hoursVal) {
+        let hrs = Math.floor(hoursVal);
+        let mins = Math.round((hoursVal - hrs) * 60);
+        let mmStr = mins.toString().padStart(2, '0');
+        return `${hrs}h ${mmStr}m`;
+    }
+
+    function formatTimeMatrix(ticks) {
+        let hours = Math.floor(ticks / 3600000);
+        let minutes = Math.floor((ticks % 3600000) / 60000);
+        let seconds = Math.floor((ticks % 60000) / 1000);
+        let milliseconds = Math.floor((ticks % 1000) / 10);
+
+        let hh = hours.toString().padStart(2, '0');
+        let mm = minutes.toString().padStart(2, '0');
+        let ss = seconds.toString().padStart(2, '0');
+        let ms = milliseconds.toString().padStart(2, '0');
+
+        return { body: `${hh}:${mm}:${ss}`, decimal: `.${ms}` };
+    }
+
+    function computeCurrentSessionDuration() {
+        if (!state.engineActive) return state.accumulatedTime;
+        return state.accumulatedTime + (Date.now() - state.sessionStartTime);
+    }
+
+    // Parsers to handle analytical duration string extraction ("HH:MM:SS.ms" -> Ms Numbers)
+    function parseDurationStringToMs(timeString) {
+        try {
+            let parts = timeString.split(':');
+            let hrs = parseInt(parts[0], 10);
+            let mins = parseInt(parts[1], 10);
+            let secsFloat = parseFloat(parts[2]);
+            return (hrs * 3600000) + (mins * 60000) + (secsFloat * 1000);
+        } catch(e) {
+            return 0;
+        }
+    }
+
+    // Direct Calendar Time Node Calculations matching Base Code logic engine rules
+    function getTrackerTimelineMetrics() {
+        let now = new Date();
+        
+        // 4 AM Shift processing matching Base Code rules
+        let targetNow = new Date(now.getTime());
+        if (now.getHours() < 4) {
+            targetNow.setDate(targetNow.getDate() - 1);
+        }
+        targetNow.setHours(4, 0, 0, 0);
+
+        let diffStart = targetNow.getTime() - START_DATE.getTime();
+        let currentDayNum = Math.floor(diffStart / (1000 * 60 * 60 * 24)) + 1;
+
+        let diffTarget = TARGET_DATE.getTime() - targetNow.getTime();
+        let daysRemaining = Math.ceil(diffTarget / (1000 * 60 * 60 * 24));
+        if (daysRemaining < 0) daysRemaining = 0;
+
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        let dateStr = now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear();
+
+        return { currentDayNum, daysRemaining, dateStr };
+    }
+
+    // Comprehensive Aggregator engine processing Analytics Modules
+    function updateAnalyticsPanel() {
+        let logs = state.historyLogs || [];
+        let now = new Date();
+        
+        // Adjust for 4 AM shift logic context windowing
+        let currentAnchor = new Date(now.getTime());
+        if (now.getHours() < 4) {
+            currentAnchor.setDate(currentAnchor.getDate() - 1);
+        }
+
+        let liveMs = computeCurrentSessionDuration();
+
+        // 1. Peak Log Computation Engine
+        let maxMs = 0;
+        let peakDayStr = "None";
+        
+        logs.forEach(log => {
+            let logMs = parseDurationStringToMs(log.durationText);
+            if (logMs > maxMs) {
+                maxMs = logMs;
+                peakDayStr = `Day ${log.day}`;
+            }
+        });
+        
+        if (liveMs > maxMs) {
+            maxMs = liveMs;
+            let currentTimeline = getTrackerTimelineMetrics();
+            peakDayStr = `Day ${currentTimeline.currentDayNum} (Today)`;
+        }
+        
+        peakDisplay.textContent = `${(maxMs / 3600000).toFixed(2)}h`;
+        peakSubText.textContent = `Achieved on ${peakDayStr}`;
+
+        // Helpers to isolate contextual date metrics across historical log slots
+        function extractLogDate(logItem) {
+            if(logItem.timestamp) return new Date(logItem.timestamp);
+            return new Date(Date.parse(logItem.dateStr + " " + now.getFullYear()) || Date.now());
+        }
+
+        function getStartOfWeek(dateObj) {
+            let d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
+            let day = d.getDay();
+            let diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday initialization rule standard
+            return new Date(d.setDate(diff));
+        }
+
+        // 2. Weekly Aggregate Module
+        let startOfCurrentWeek = getStartOfWeek(currentAnchor);
+        let startOfLastWeek = new Date(startOfCurrentWeek.getTime());
+        startOfLastWeek.setDate(startOfLastWeek.getDate() - 7);
+        let endOfLastWeek = new Date(startOfCurrentWeek.getTime());
+        endOfLastWeek.setMilliseconds(-1);
+
+        let currentWeekMs = liveMs;
+        let lastWeekMs = 0;
+
+        logs.forEach(log => {
+            let logDate = extractLogDate(log);
+            let logMs = parseDurationStringToMs(log.durationText);
+            
+            if (logDate >= startOfCurrentWeek) {
+                currentWeekMs += logMs;
+            } else if (logDate >= startOfLastWeek && logDate <= endOfLastWeek) {
+                lastWeekMs += logMs;
+            }
+        });
+
+        weeklyDisplay.textContent = `${(currentWeekMs / 3600000).toFixed(2)}h`;
+        weeklySubText.textContent = `Prev Week: ${(lastWeekMs / 3600000).toFixed(1)}h`;
+
+        // 3. Monthly Aggregate Module
+        let currentMonthIdx = currentAnchor.getMonth();
+        let currentYearVal = currentAnchor.getFullYear();
+
+        let lastMonthIdx = currentMonthIdx - 1;
+        let lastMonthYearVal = currentYearVal;
+        if (lastMonthIdx < 0) {
+            lastMonthIdx = 11;
+            lastMonthYearVal--;
+        }
+
+        let currentMonthMs = liveMs;
+        let lastMonthMs = 0;
+
+        logs.forEach(log => {
+            let logDate = extractLogDate(log);
+            let logMs = parseDurationStringToMs(log.durationText);
+
+            if (logDate.getMonth() === currentMonthIdx && logDate.getFullYear() === currentYearVal) {
+                currentMonthMs += logMs;
+            } else if (logDate.getMonth() === lastMonthIdx && logDate.getFullYear() === lastMonthYearVal) {
+                lastMonthMs += logMs;
+            }
+        });
+
+        monthlyDisplay.textContent = `${(currentMonthMs / 3600000).toFixed(2)}h`;
+        monthlySubText.textContent = `Prev Month: ${(lastMonthMs / 3600000).toFixed(1)}h`;
+    }
+
+    function updateUIDisplay() {
+        let totalTimeMs = computeCurrentSessionDuration();
+        let frame = formatTimeMatrix(totalTimeMs);
+        chronoDisplay.innerHTML = frame.body + `<span class="chrono-ms">${frame.decimal}</span>`;
+        
+        streakDisplay.textContent = state.streak;
+
+        // Force min-limit constraint verification engine blocks
+        if (state.targetHours < 5) state.targetHours = 5;
+
+        // Custom Stepper display and state modifier rendering logic
+        targetHoursValDisplay.textContent = formatTargetHoursText(state.targetHours);
+        decTargetBtn.disabled = (state.targetHours <= 5);
+
+        let targetMs = state.targetHours * 60 * 60 * 1000;
+        let elapsedHours = totalTimeMs / (1000 * 60 * 60);
+        let pct = Math.min(100, (totalTimeMs / targetMs) * 100);
+        
+        progressText.textContent = `${elapsedHours.toFixed(2)} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
+        progressBar.style.width = `${pct}%`;
+
+        if (state.shieldActive) {
+            shieldDisplay.textContent = "🛡️ Active";
+            shieldDisplay.style.color = "var(--accent-amber)";
+            shieldSubText.textContent = "Protection Active for Next Cycle";
+        } else {
+            shieldDisplay.textContent = "Inactive";
+            shieldDisplay.style.color = "var(--text-muted)";
+            shieldSubText.textContent = "Streak Protection Node";
+        }
+
+        // Keep core performance metrics aligned dynamically
+        updateAnalyticsPanel();
+    }
+
+    // Interactivity Control Systems for the Step Tracker Configuration Layouts
+    decTargetBtn.addEventListener("click", () => {
+        if (state.targetHours > 5) {
+            state.targetHours = Math.max(5, state.targetHours - 0.5);
+            saveState();
+            updateUIDisplay();
+        }
+    });
+
+    incTargetBtn.addEventListener("click", () => {
+        state.targetHours = Math.min(24, state.targetHours + 0.5);
+        saveState();
+        updateUIDisplay();
+    });
+
+    resetTargetBtn.addEventListener("click", () => {
+        state.targetHours = 8;
+        saveState();
+        updateUIDisplay();
+    });
+
+    // 4 AM Temporal Engine Rollover Module
+    function evaluateTemporalRollover() {
+        let now = new Date();
+        let lastRollover = new Date(state.lastRolloverTimestamp);
+        
+        // Calculate the boundary threshold date representing the last recorded day's 4 AM
+        let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 4, 0, 0, 0);
+        if (lastRollover.getHours() < 4) {
+            boundary.setDate(boundary.getDate() - 1);
+        }
+
+        // Calculate the target rollover boundary for the current timeline context
+        let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0);
+        if (now.getHours() < 4) {
+            currentBoundary.setDate(currentBoundary.getDate() - 1);
+        }
+
+        if (currentBoundary.getTime() > boundary.getTime()) {
+            let durationLogged = computeCurrentSessionDuration();
+            let matrix = formatTimeMatrix(durationLogged);
+            let timeString = `${matrix.body}${matrix.decimal}`;
+            
+            let currentTargetMs = state.targetHours * 60 * 60 * 1000;
+            let passedTarget = durationLogged >= currentTargetMs;
+
+            let badgeType = "badge-critical";
+            let badgeText = "Failed";
+
+            // Historical calculation values matching layout
+            let timeline = getTrackerTimelineMetrics();
+
+            if (passedTarget) {
+                state.streak++;
+                state.shieldActive = false; // Reset shield since goal was hit successfully
+                badgeType = "badge-elite";
+                badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
+            } else {
+                if (state.shieldActive) {
+                    state.shieldActive = false;
+                    badgeType = "badge-amber";
+                    badgeText = "Shielded";
+                } else {
+                    state.streak = 0;
+                    state.shieldActive = true; // Trigger shield activation eligibility for the subsequent cycle
+                }
+            }
+
+            // Log entry creation with explicit system tracking timestamps
+            state.historyLogs.unshift({
+                day: timeline.currentDayNum - 1, // Log for the completed day block
+                dateStr: lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                durationText: timeString,
+                statusBadgeClass: badgeType,
+                statusText: badgeText,
+                timestamp: lastRollover.getTime()
+            });
+
+            // Re-initialize core focus state array spaces
+            state.accumulatedTime = 0;
+            state.sessionStartTime = Date.now();
+            state.lastRolloverTimestamp = Date.now();
+            
+            saveState();
+            updateUIDisplay();
+            renderVaultDrawer();
+        }
+    }
+
+    function renderVaultDrawer() {
+        vaultCardsContainer.innerHTML = "";
+        if (!state.historyLogs || state.historyLogs.length === 0) {
+            vaultCardsContainer.innerHTML = `<div class="void-message">No historical logs archived inside the Performance Vault yet. Tracking resets daily at 4:00 AM.</div>`;
+            return;
+        }
+
+        state.historyLogs.forEach(item => {
+            let card = document.createElement("div");
+            card.className = "execution-card";
+            card.innerHTML = `
+                <div class="card-top-row">
+                    <span class="card-date">Day ${item.day} — ${item.dateStr}</span>
+                    <span class="status-badge ${item.statusBadgeClass}">${item.statusText}</span>
+                </div>
+                <div class="card-metrics-block">
+                    <div class="val">${item.durationText}</div>
+                    <div class="label">Total Focus Duration</div>
+                </div>
+            `;
+            vaultCardsContainer.appendChild(card);
+        });
+    }
+
+    // Interactive Core Tracking State Loop Rules
+    toggleBtn.addEventListener("click", () => {
+        evaluateTemporalRollover();
+        if (!state.engineActive) {
+            state.sessionStartTime = Date.now();
+            state.engineActive = true;
+            toggleBtn.textContent = "⏸ Stop Block";
+            toggleBtn.className = "halt-active";
+            mainLoopInterval = setInterval(() => {
+                evaluateTemporalRollover();
+                updateUIDisplay();
+            }, 30);
+        } else {
+            state.accumulatedTime += (Date.now() - state.sessionStartTime);
+            state.engineActive = false;
+            toggleBtn.textContent = "▶ Start Session";
+            toggleBtn.className = "run-active";
+            clearInterval(mainLoopInterval);
+        }
+        saveState();
+        updateUIDisplay();
+    });
+
+    // Reset Engine Logic Action
+    resetEngineBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to reset the current day's focus time? This cannot be undone.")) {
+            // Clear runtime tracking variables
+            state.accumulatedTime = 0;
+            state.engineActive = false;
+            state.sessionStartTime = 0;
+            
+            // Revert state variables to safety fallback layout
+            clearInterval(mainLoopInterval);
+            toggleBtn.textContent = "▶ Start Session";
+            toggleBtn.className = "run-active";
+            
+            saveState();
+            updateUIDisplay();
+        }
+    });
+
+    // Hard Reset Core Execution Framework Engine
+    hardResetBtn.addEventListener("click", () => {
+        if (confirm("☢️ SYSTEM HARD RESET WARNING:\n\nThis will completely wipe your streak records, focus configurations, and clear the entire Performance Archive Vault permanently.\n\nAre you sure you want to proceed?")) {
+            clearInterval(mainLoopInterval);
+            localStorage.removeItem("warrior_chrono_state");
+            state = {};
+            initFallbackState();
+            
+            toggleBtn.textContent = "▶ Start Session";
+            toggleBtn.className = "run-active";
+            
+            vaultDrawer.style.display = "none";
+            vaultDrawer.classList.remove("active");
+            
+            updateUIDisplay();
+            renderVaultDrawer();
+            alert("System tracking data has been fully re-initialized.");
+        }
+    });
+
+    // Vault Slider Panel Drawer Management Triggers
+    document.getElementById("openHistoryBtn").addEventListener("click", () => {
+        evaluateTemporalRollover();
+        renderVaultDrawer();
+        vaultDrawer.style.display = "block";
+        setTimeout(() => vaultDrawer.classList.add("active"), 10);
+    });
+
+    document.getElementById("closeVaultBtn").addEventListener("click", () => {
+        vaultDrawer.classList.remove("active");
+        setTimeout(() => vaultDrawer.style.display = "none", 400);
+    });
+
+    // Boot Initialization Hooks
+    evaluateTemporalRollover();
+    updateUIDisplay();
+
+    if (state.engineActive) {
+        toggleBtn.textContent = "⏸ Stop Block";
+        toggleBtn.className = "halt-active";
+        mainLoopInterval = setInterval(() => {
+            evaluateTemporalRollover();
+            updateUIDisplay();
+        }, 30);
+    }
+</script>
+</body>
+</html>
