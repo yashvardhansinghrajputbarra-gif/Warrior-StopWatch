@@ -238,7 +238,7 @@
             letter-spacing: -1px;
             color: var(--text-primary);
             margin-bottom: 12px;
-            white-space: nowrap; /* Prevents text splitting across lines */
+            white-space: nowrap;
         }
 
         .timeline-body-wrapper {
@@ -559,8 +559,8 @@
 
 <script>
     // Configured Static Timeline Boundaries
-    const START_DATE = new Date(2026, 2, 14, 4, 0, 0); // Updated to March 14, 2026
-    const TARGET_DATE = new Date(2027, 4, 2, 4, 0, 0);  // May 2, 2027
+    const START_DATE = new Date(2026, 2, 14, 4, 0, 0); 
+    const TARGET_DATE = new Date(2027, 4, 2, 4, 0, 0);  
 
     // State Space Definition mapping question log schemas
     let state = JSON.parse(localStorage.getItem("warrior_chrono_state") || "{}");
@@ -845,7 +845,7 @@
     incTargetBtn.addEventListener("click", () => {
         state.targetHours = Math.min(24, state.targetHours + 0.5);
         saveState();
-            updateUIDisplay();
+        updateUIDisplay();
     });
 
     resetTargetBtn.addEventListener("click", () => {
@@ -860,13 +860,13 @@
         let lastRollover = new Date(state.lastRolloverTimestamp);
         
         // Calculate the boundary threshold date representing the last recorded day's 4 AM
-        let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 4, 0, 0, 0);
+        let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 4, 0, 0, 0, 0);
         if (lastRollover.getHours() < 4) {
             boundary.setDate(boundary.getDate() - 1);
         }
 
         // Calculate the target rollover boundary for the current timeline context
-        let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0);
+        let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0, 0);
         if (now.getHours() < 4) {
             currentBoundary.setDate(currentBoundary.getDate() - 1);
         }
@@ -947,7 +947,7 @@
     }
 
     // Interactive Core Tracking State Loop Rules
-    toggleBtn.addEventListener("click", () => {
+    function toggleSession() {
         evaluateTemporalRollover();
         if (!state.engineActive) {
             state.sessionStartTime = Date.now();
@@ -967,25 +967,36 @@
         }
         saveState();
         updateUIDisplay();
-    });
+    }
 
-    // F1 Key Interception Listener Module
+    toggleBtn.addEventListener("click", toggleSession);
+
+    // Global Key Interception Listener Module (F1 & Spacebar Shortcuts)
     window.addEventListener("keydown", (e) => {
+        // Handle F1 hotkey definition shortcut logic
         if (e.key === "F1") {
-            e.preventDefault(); // Blocks native fallback window popup systems
-            toggleBtn.click();  // Fires session core tracking toggles
+            e.preventDefault(); 
+            toggleSession();
+        }
+        
+        // Handle Spacebar layout execution activation toggles
+        if (e.key === " " || e.code === "Space") {
+            // Safety measure: ignore shortcut trigger if user is actively writing inside an input or button interaction component zone
+            const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
+            if (activeTag !== "input" && activeTag !== "textarea" && activeTag !== "button") {
+                e.preventDefault(); // Prevents default browser page jumping / layout scrolling behaviors
+                toggleSession();
+            }
         }
     });
 
     // Reset Engine Logic Action
     resetEngineBtn.addEventListener("click", () => {
         if (confirm("Are you sure you want to reset the current day's focus time? This cannot be undone.")) {
-            // Clear runtime tracking variables
             state.accumulatedTime = 0;
             state.engineActive = false;
             state.sessionStartTime = 0;
             
-            // Revert state variables to safety fallback layout
             clearInterval(mainLoopInterval);
             toggleBtn.textContent = "▶ Start Session";
             toggleBtn.className = "run-active";
