@@ -452,6 +452,69 @@
 
         .void-message { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 0; letter-spacing: 0.2px; width: 100%; grid-column: span 3; }
 
+        /* Success Pop-up Overlay Design Tokens */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .success-overlay.show {
+            opacity: 1;
+        }
+        .success-popup {
+            background: var(--apple-glass);
+            border: 1px solid rgba(52, 199, 89, 0.3);
+            border-radius: 28px;
+            padding: 40px;
+            text-align: center;
+            max-width: 380px;
+            width: 85%;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15);
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .success-overlay.show .success-popup {
+            transform: scale(1);
+        }
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 18px;
+            display: inline-block;
+            filter: drop-shadow(0 4px 10px rgba(255,215,0,0.3));
+            animation: popScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes popScale {
+            0% { transform: scale(0) rotate(-20deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .dismiss-btn {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 30px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 99px;
+            width: 100%;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .dismiss-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
         @media (max-width: 1400px) { .grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 1250px) { .analytics-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 1100px) { .cards-list-layout { grid-template-columns: repeat(2, 1fr); } }
@@ -558,6 +621,17 @@
     </div>
 </div>
 
+<div id="successOverlay" class="success-overlay">
+    <div class="success-popup">
+        <div class="success-icon">🏆</div>
+        <h2 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Target Achieved!</h2>
+        <p style="margin: 0 0 28px 0; font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+            You have successfully crushed your focus goal for today. Keep defending the streak, warrior.
+        </p>
+        <button class="dismiss-btn" id="closeSuccessBtn">Dismiss</button>
+    </div>
+</div>
+
 <script>
     // Configured Static Timeline Boundaries
     const START_DATE = new Date(2026, 2, 14, 4, 0, 0); 
@@ -566,6 +640,9 @@
     // State Space Definition mapping question log schemas
     let state = JSON.parse(localStorage.getItem("warrior_chrono_state") || "{}");
     
+    // Popup tracking state variable
+    let popupFiredToday = false;
+
     // Fallback Initializer Framework
     function initFallbackState() {
         if (state.streak === undefined) state.streak = 0;
@@ -600,6 +677,8 @@
     const resetTargetBtn = document.getElementById("resetTargetBtn");
     const hardResetBtn = document.getElementById("hardResetBtn");
     const remainingTargetText = document.getElementById("remainingTargetText");
+    const successOverlay = document.getElementById("successOverlay");
+    const closeSuccessBtn = document.getElementById("closeSuccessBtn");
 
     // Timeline Visual DOM Mapping Output Nodes
     const timelineDayDisplay = document.getElementById("timelineDayDisplay");
@@ -815,14 +894,22 @@
         progressText.textContent = `${elapsedFormatted} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
         progressBar.style.width = `${pct}%`;
 
-        // Target Remaining Calculation Engine
+        // Target Remaining & Real-time Milestone Pop-up Logic Execution Node
         if (totalTimeMs >= targetMs) {
             remainingTargetText.textContent = "Goal Achieved! 🎉";
             remainingTargetText.style.color = "var(--accent-green)";
+            
+            // Trigger the success milestone layout overlay precisely once when crossed
+            if (!popupFiredToday) {
+                popupFiredToday = true;
+                successOverlay.style.display = "flex";
+                setTimeout(() => successOverlay.classList.add("show"), 10);
+            }
         } else {
             let remainingMs = targetMs - totalTimeMs;
             remainingTargetText.textContent = `Remaining: ${formatProgressElapsedText(remainingMs)}`;
             remainingTargetText.style.color = "var(--accent-amber)";
+            popupFiredToday = false; // Reset lock gate if target parameters shift up
         }
 
         if (state.shieldActive) {
@@ -927,6 +1014,7 @@
             state.accumulatedTime = 0;
             state.sessionStartTime = Date.now();
             state.lastRolloverTimestamp = Date.now();
+            popupFiredToday = false; // Reset the popup gate tracking lock for the new day
             
             saveState();
             updateUIDisplay();
@@ -1008,6 +1096,7 @@
             state.accumulatedTime = 0;
             state.engineActive = false;
             state.sessionStartTime = 0;
+            popupFiredToday = false; // Reset popup threshold condition states
             
             clearInterval(mainLoopInterval);
             toggleBtn.textContent = "▶ Start Session";
@@ -1025,6 +1114,7 @@
             localStorage.removeItem("warrior_chrono_state");
             state = {};
             initFallbackState();
+            popupFiredToday = false;
             
             toggleBtn.textContent = "▶ Start Session";
             toggleBtn.className = "run-active";
@@ -1049,6 +1139,12 @@
     document.getElementById("closeVaultBtn").addEventListener("click", () => {
         vaultDrawer.classList.remove("active");
         setTimeout(() => vaultDrawer.style.display = "none", 400);
+    });
+
+    // Dismiss Button Event Listener for Success Popup
+    closeSuccessBtn.addEventListener("click", () => {
+        successOverlay.classList.remove("show");
+        setTimeout(() => successOverlay.style.display = "none", 400);
     });
 
     // Boot Initialization Hooks
