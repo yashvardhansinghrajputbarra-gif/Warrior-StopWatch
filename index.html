@@ -92,7 +92,7 @@
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 22px;
             margin-bottom: 28px;
         }
@@ -239,6 +239,14 @@
             color: var(--text-primary);
             margin-bottom: 12px;
             white-space: nowrap;
+        }
+
+        .shield-notation {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent-amber);
+            margin-left: 8px;
+            vertical-align: middle;
         }
 
         .timeline-body-wrapper {
@@ -555,14 +563,8 @@
 
     <div class="glass">
         <h3>🔥 Current Streak</h3>
-        <div class="num" id="streakDisplay">0</div>
-        <p class="sub-metric">Consecutive Goal Hits</p>
-    </div>
-    
-    <div class="glass">
-        <h3>🛡️ Shield Status</h3>
-        <div class="num" id="shieldDisplay" style="color: var(--text-muted);">Inactive</div>
-        <p class="sub-metric" id="shieldSubText">Streak Protection Node</p>
+        <div class="num"><span id="streakDisplay">0</span><span id="shieldDisplay" class="shield-notation"></span></div>
+        <p class="sub-metric" id="streakSubText">Consecutive Goal Hits</p>
     </div>
 </div>
 
@@ -659,7 +661,7 @@
     const resetEngineBtn = document.getElementById("resetEngineBtn");
     const streakDisplay = document.getElementById("streakDisplay");
     const shieldDisplay = document.getElementById("shieldDisplay");
-    const shieldSubText = document.getElementById("shieldSubText");
+    const streakSubText = document.getElementById("streakSubText");
     const vaultDrawer = document.getElementById("vaultDrawer");
     const vaultCardsContainer = document.getElementById("vaultCardsContainer");
     const targetHoursValDisplay = document.getElementById("targetHoursValDisplay");
@@ -869,6 +871,22 @@
         
         streakDisplay.textContent = state.streak;
 
+        // Integrated Streak & Shield Display Node Conditional Parser
+        if (state.streak > 0) {
+            if (state.shieldActive) {
+                shieldDisplay.textContent = " (💥 Shield Used)";
+                shieldDisplay.style.color = "var(--accent-red)";
+                streakSubText.textContent = "Streak Protection Defended the Day";
+            } else {
+                shieldDisplay.textContent = " (🛡️ Shield Ready)";
+                shieldDisplay.style.color = "var(--accent-amber)";
+                streakSubText.textContent = "Consecutive Goal Hits — Shield Active";
+            }
+        } else {
+            shieldDisplay.textContent = "";
+            streakSubText.textContent = "Consecutive Goal Hits";
+        }
+
         // Force min-limit constraint verification engine blocks
         if (state.targetHours < 5) state.targetHours = 5;
 
@@ -900,16 +918,6 @@
             remainingTargetText.textContent = `Remaining: ${formatProgressElapsedText(remainingMs)}`;
             remainingTargetText.style.color = "var(--accent-amber)";
             popupFiredToday = false; // Reset lock gate if target parameters shift up
-        }
-
-        if (state.shieldActive) {
-            shieldDisplay.textContent = "🛡️ Active";
-            shieldDisplay.style.color = "var(--accent-amber)";
-            shieldSubText.textContent = "Protection Active for Next Cycle";
-        } else {
-            shieldDisplay.textContent = "Inactive";
-            shieldDisplay.style.color = "var(--text-muted)";
-            shieldSubText.textContent = "Streak Protection Node";
         }
 
         // Live Dynamic updates targeting timeline panel box elements
@@ -975,17 +983,18 @@
 
             if (passedTarget) {
                 state.streak++;
-                state.shieldActive = false; // Reset shield since goal was hit successfully
+                state.shieldActive = false; // Reset shield status to default ready state
                 badgeType = "badge-elite";
                 badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
             } else {
-                if (state.shieldActive) {
-                    state.shieldActive = false;
+                // Shield can ONLY be utilized or exist if current streak was already active prior to this failure day cycle
+                if (state.streak > 0 && !state.shieldActive) {
+                    state.shieldActive = true; // Engage protection node state for current tracking layout view
                     badgeType = "badge-amber";
                     badgeText = "Shielded";
                 } else {
                     state.streak = 0;
-                    state.shieldActive = true; // Trigger shield activation eligibility for the subsequent cycle
+                    state.shieldActive = false;
                 }
             }
 
@@ -1046,7 +1055,7 @@
             mainLoopInterval = setInterval(() => {
                 evaluateTemporalRollover();
                 updateUIDisplay();
-            }, 250); // Kept 250ms interval for precise text sync without millisecond overhead
+            }, 250);
         } else {
             state.accumulatedTime += (Date.now() - state.sessionStartTime);
             state.engineActive = false;
