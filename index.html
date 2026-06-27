@@ -270,14 +270,7 @@
             margin: 24px 0;
             display: flex;
             justify-content: center;
-            align-items: baseline;
-        }
-
-        .chrono-ms {
-            font-size: 38px;
-            color: var(--text-muted);
-            font-weight: 500;
-            margin-left: 2px;
+            align-items: center;
         }
 
         .controls-cluster {
@@ -575,7 +568,7 @@
 
 <div class="glass" style="text-align: center; padding: 44px 26px; margin-bottom: 28px;">
     <h3>⏱️ Core Focus Session Engine</h3>
-    <div class="chrono-engine-container" id="chronoDisplay">00:00:00<span class="chrono-ms">.00</span></div>
+    <div class="chrono-engine-container" id="chronoDisplay">00:00:00</div>
     
     <div class="controls-cluster">
         <div class="action-row">
@@ -720,14 +713,12 @@
         let hours = Math.floor(ticks / 3600000);
         let minutes = Math.floor((ticks % 3600000) / 60000);
         let seconds = Math.floor((ticks % 60000) / 1000);
-        let milliseconds = Math.floor((ticks % 1000) / 10);
 
         let hh = hours.toString().padStart(2, '0');
         let mm = minutes.toString().padStart(2, '0');
         let ss = seconds.toString().padStart(2, '0');
-        let ms = milliseconds.toString().padStart(2, '0');
 
-        return { body: `${hh}:${mm}:${ss}`, decimal: `.${ms}` };
+        return `${hh}:${mm}:${ss}`;
     }
 
     function computeCurrentSessionDuration() {
@@ -735,14 +726,14 @@
         return state.accumulatedTime + (Date.now() - state.sessionStartTime);
     }
 
-    // Parsers to handle analytical duration string extraction ("HH:MM:SS.ms" -> Ms Numbers)
+    // Parsers to handle analytical duration string extraction ("HH:MM:SS" -> Ms Numbers)
     function parseDurationStringToMs(timeString) {
         try {
             let parts = timeString.split(':');
             let hrs = parseInt(parts[0], 10);
             let mins = parseInt(parts[1], 10);
-            let secsFloat = parseFloat(parts[2]);
-            return (hrs * 3600000) + (mins * 60000) + (secsFloat * 1000);
+            let secs = parseInt(parts[2], 10);
+            return (hrs * 3600000) + (mins * 60000) + (secs * 1000);
         } catch(e) {
             return 0;
         }
@@ -874,8 +865,7 @@
 
     function updateUIDisplay() {
         let totalTimeMs = computeCurrentSessionDuration();
-        let frame = formatTimeMatrix(totalTimeMs);
-        chronoDisplay.innerHTML = frame.body + `<span class="chrono-ms">${frame.decimal}</span>`;
+        chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
         
         streakDisplay.textContent = state.streak;
 
@@ -972,8 +962,7 @@
 
         if (currentBoundary.getTime() > boundary.getTime()) {
             let durationLogged = computeCurrentSessionDuration();
-            let matrix = formatTimeMatrix(durationLogged);
-            let timeString = `${matrix.body}${matrix.decimal}`;
+            let timeString = formatTimeMatrix(durationLogged);
             
             let currentTargetMs = state.targetHours * 60 * 60 * 1000;
             let passedTarget = durationLogged >= currentTargetMs;
@@ -1057,7 +1046,7 @@
             mainLoopInterval = setInterval(() => {
                 evaluateTemporalRollover();
                 updateUIDisplay();
-            }, 30);
+            }, 250); // Kept 250ms interval for precise text sync without millisecond overhead
         } else {
             state.accumulatedTime += (Date.now() - state.sessionStartTime);
             state.engineActive = false;
@@ -1157,7 +1146,7 @@
         mainLoopInterval = setInterval(() => {
             evaluateTemporalRollover();
             updateUIDisplay();
-        }, 30);
+        }, 250);
     }
 </script>
 </body>
