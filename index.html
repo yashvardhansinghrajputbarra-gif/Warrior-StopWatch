@@ -595,17 +595,17 @@
                 <div class="analytics-grid" style="margin-top: 22px;">
                     <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
                         <h3 style="font-size: 11px; margin-bottom: 8px;">👑 Peak Session</h3>
-                        <div class="num" id="peakDisplay" style="font-size: 28px; margin-bottom: 4px;">0.00h</div>
+                        <div class="num" id="peakDisplay" style="font-size: 28px; margin-bottom: 4px;">0h 00m</div>
                         <p class="sub-metric" id="peakSubText" style="font-size: 11px;">Highest Focus Record</p>
                     </div>
                     <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
                         <h3 style="font-size: 11px; margin-bottom: 8px;">📊 Weekly Aggregate</h3>
-                        <div class="num" id="weeklyDisplay" style="font-size: 28px; margin-bottom: 4px;">0.00h</div>
+                        <div class="num" id="weeklyDisplay" style="font-size: 28px; margin-bottom: 4px;">0h 00m</div>
                         <p class="sub-metric" id="weeklySubText" style="font-size: 11px;">Current vs Last Week</p>
                     </div>
                     <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
                         <h3 style="font-size: 11px; margin-bottom: 8px;">📈 Monthly Aggregate</h3>
-                        <div class="num" id="monthlyDisplay" style="font-size: 28px; margin-bottom: 4px;">0.00h</div>
+                        <div class="num" id="monthlyDisplay" style="font-size: 28px; margin-bottom: 4px;">0h 00m</div>
                         <p class="sub-metric" id="monthlySubText" style="font-size: 11px;">Current vs Last Month</p>
                     </div>
                 </div>
@@ -711,6 +711,14 @@
         return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
     }
 
+    // Custom helper specifically designed for formatting analytics aggregated time views safely
+    function formatAnalyticsTime(ticks) {
+        let totalMinutes = Math.floor(ticks / 60000);
+        let hrs = Math.floor(totalMinutes / 60);
+        let mins = totalMinutes % 60;
+        return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
+    }
+
     function formatTimeMatrix(ticks) {
         let hours = Math.floor(ticks / 3600000);
         let minutes = Math.floor((ticks % 3600000) / 60000);
@@ -796,7 +804,7 @@
             peakDayStr = `Day ${currentTimeline.currentDayNum} (Today)`;
         }
         
-        peakDisplay.textContent = `${(maxMs / 3600000).toFixed(2)}h`;
+        peakDisplay.textContent = formatAnalyticsTime(maxMs);
         peakSubText.textContent = `Achieved on ${peakDayStr}`;
 
         // Helpers to isolate contextual date metrics across historical log slots
@@ -833,8 +841,8 @@
             }
         });
 
-        weeklyDisplay.textContent = `${(currentWeekMs / 3600000).toFixed(2)}h`;
-        weeklySubText.textContent = `Prev Week: ${(lastWeekMs / 3600000).toFixed(1)}h`;
+        weeklyDisplay.textContent = formatAnalyticsTime(currentWeekMs);
+        weeklySubText.textContent = `Prev Week: ${formatAnalyticsTime(lastWeekMs)}`;
 
         // 3. Monthly Aggregate Module
         let currentMonthIdx = currentAnchor.getMonth();
@@ -861,8 +869,8 @@
             }
         });
 
-        monthlyDisplay.textContent = `${(currentMonthMs / 3600000).toFixed(2)}h`;
-        monthlySubText.textContent = `Prev Month: ${(lastMonthMs / 3600000).toFixed(1)}h`;
+        monthlyDisplay.textContent = formatAnalyticsTime(currentMonthMs);
+        monthlySubText.textContent = `Prev Month: ${formatAnalyticsTime(lastMonthMs)}`;
     }
 
     function updateUIDisplay() {
