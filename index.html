@@ -213,6 +213,8 @@
             font-weight: 600;
             color: var(--text-primary);
             user-select: none;
+            width: 100%;
+            text-align: center;
         }
 
         .progress-container {
@@ -239,14 +241,6 @@
             color: var(--text-primary);
             margin-bottom: 12px;
             white-space: nowrap;
-        }
-
-        .shield-notation {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--accent-amber);
-            margin-left: 8px;
-            vertical-align: middle;
         }
 
         .timeline-body-wrapper {
@@ -550,20 +544,20 @@
         
         <div class="stepper-container">
             <button class="stepper-btn" id="decTargetBtn">−</button>
-            <span class="stepper-value" id="targetHoursValDisplay">8h 00m</span>
+            <span class="stepper-value" id="targetHoursValDisplay">8h 30m</span>
             <button class="stepper-btn" id="incTargetBtn">+</button>
         </div>
 
-        <p id="progressText" style="margin-top: 14px; margin-bottom: 0; font-size: 12px; color: var(--text-secondary);">0m / 8h 00m (0%)</p>
+        <p id="progressText" style="margin-top: 14px; margin-bottom: 0; font-size: 12px; color: var(--text-secondary);">0m / 8h 30m (0%)</p>
         <div class="progress-container">
             <div id="progressBar" class="progress-bar"></div>
         </div>
-        <p id="remainingTargetText" style="margin-top: 8px; margin-bottom: 0; font-size: 11px; color: var(--accent-amber); font-weight: 500;">Remaining: 8h 00m</p>
+        <p id="remainingTargetText" style="margin-top: 8px; margin-bottom: 0; font-size: 11px; color: var(--accent-amber); font-weight: 500;">Remaining: 8h 30m</p>
     </div>
 
     <div class="glass">
         <h3>🔥 Current Streak</h3>
-        <div class="num"><span id="streakDisplay">0</span><span id="shieldDisplay" class="shield-notation"></span></div>
+        <div class="num" id="streakDisplay">0</div>
         <p class="sub-metric" id="streakSubText">Consecutive Goal Hits</p>
     </div>
 </div>
@@ -638,6 +632,18 @@
     // Popup tracking state variable
     let popupFiredToday = false;
 
+    // Helper to determine the default target hours strictly based on current day of week
+    function getAutomatedTargetHours() {
+        let now = new Date();
+        // If it's before 4 AM, the true "tracking day" is actually yesterday
+        if (now.getHours() < 4) {
+            let yesterday = new Date(now.getTime());
+            yesterday.setDate(yesterday.getDate() - 1);
+            return yesterday.getDay() === 0 ? 11.5 : 8.5;
+        }
+        return now.getDay() === 0 ? 11.5 : 8.5; // Sunday: 11.5h (11h 30m), Mon-Sat: 8.5h (8h 30m)
+    }
+
     // Fallback Initializer Framework
     function initFallbackState() {
         if (state.streak === undefined) state.streak = 0;
@@ -646,7 +652,7 @@
         if (state.engineActive === undefined) state.engineActive = false;
         if (state.sessionStartTime === undefined) state.sessionStartTime = 0;
         if (state.historyLogs === undefined) state.historyLogs = [];
-        if (state.targetHours === undefined) state.targetHours = 8; 
+        if (state.targetHours === undefined) state.targetHours = getAutomatedTargetHours(); 
         if (state.lastRolloverTimestamp === undefined) {
             state.lastRolloverTimestamp = Date.now();
         }
@@ -660,7 +666,6 @@
     const toggleBtn = document.getElementById("toggleBtn");
     const resetEngineBtn = document.getElementById("resetEngineBtn");
     const streakDisplay = document.getElementById("streakDisplay");
-    const shieldDisplay = document.getElementById("shieldDisplay");
     const streakSubText = document.getElementById("streakSubText");
     const vaultDrawer = document.getElementById("vaultDrawer");
     const vaultCardsContainer = document.getElementById("vaultCardsContainer");
@@ -873,27 +878,29 @@
         monthlySubText.textContent = `Prev Month: ${formatAnalyticsTime(lastMonthMs)}`;
     }
 
+    // Handles the core 6:00 AM visibility lock logic for Target Controls
+    function updateTargetButtonsVisibility() {
+        let now = new Date();
+        let currentHour = now.getHours();
+
+        // Target adjustment permitted strictly from 4:00 AM to 5:59:59 AM
+        if (currentHour >= 4 && currentHour < 6) {
+            decTargetBtn.style.display = "flex";
+            incTargetBtn.style.display = "flex";
+            resetTargetBtn.style.display = "block";
+        } else {
+            decTargetBtn.style.display = "none";
+            incTargetBtn.style.display = "none";
+            resetTargetBtn.style.display = "none";
+        }
+    }
+
     function updateUIDisplay() {
         let totalTimeMs = computeCurrentSessionDuration();
         chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
         
         streakDisplay.textContent = state.streak;
-
-        // Integrated Streak & Shield Display Node Conditional Parser
-        if (state.streak > 0) {
-            if (state.shieldActive) {
-                shieldDisplay.textContent = " (💥 Shield Used)";
-                shieldDisplay.style.color = "var(--accent-red)";
-                streakSubText.textContent = "Streak Protection Defended the Day";
-            } else {
-                shieldDisplay.textContent = " (🛡️ Shield Ready)";
-                shieldDisplay.style.color = "var(--accent-amber)";
-                streakSubText.textContent = "Consecutive Goal Hits — Shield Active";
-            }
-        } else {
-            shieldDisplay.textContent = "";
-            streakSubText.textContent = "Consecutive Goal Hits";
-        }
+        streakSubText.textContent = "Consecutive Goal Hits";
 
         // Force min-limit constraint verification engine blocks
         if (state.targetHours < 5) state.targetHours = 5;
@@ -934,6 +941,9 @@
         timelineRemainingDisplay.textContent = `(${timeline.daysRemaining} Days Left)`;
         timelineDateDisplay.textContent = timeline.dateStr;
 
+        // Enforce the 6:00 AM target modification lock
+        updateTargetButtonsVisibility();
+
         // Keep core performance metrics aligned dynamically
         updateAnalyticsPanel();
     }
@@ -954,7 +964,7 @@
     });
 
     resetTargetBtn.addEventListener("click", () => {
-        state.targetHours = 8;
+        state.targetHours = getAutomatedTargetHours();
         saveState();
         updateUIDisplay();
     });
@@ -1016,10 +1026,11 @@
                 timestamp: lastRollover.getTime()
             });
 
-            // Re-initialize focus state metrics space
+            // Re-initialize focus state metrics space for automated system mapping
             state.accumulatedTime = 0;
             state.sessionStartTime = Date.now();
             state.lastRolloverTimestamp = Date.now();
+            state.targetHours = getAutomatedTargetHours(); // Reset to current day schedule baseline dynamically
             popupFiredToday = false; // Reset the popup gate tracking lock for the new day
             
             saveState();
