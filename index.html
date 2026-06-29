@@ -241,6 +241,7 @@
             color: var(--text-primary);
             margin-bottom: 12px;
             white-space: nowrap;
+            transition: color 0.4s ease, transform 0.4s ease;
         }
 
         .timeline-body-wrapper {
@@ -510,6 +511,56 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
+        /* --- STREAK ACHIEVED PREMIUM ANIMATION ELEMENTS --- */
+        .streak-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .streak-pop {
+            animation: textScalePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            color: var(--accent-green) !important;
+        }
+
+        @keyframes textScalePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.25); }
+            100% { transform: scale(1); }
+        }
+
+        .floating-trophy {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            font-size: 38px;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0;
+            transform: translate(-50%, 0) scale(0.5);
+            filter: drop-shadow(0 0 12px rgba(255, 149, 0, 0.6));
+            animation: trophyFloatUpOut 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            z-index: 10;
+        }
+
+        @keyframes trophyFloatUpOut {
+            0% {
+                transform: translate(-50%, 15px) scale(0.4) rotate(-15deg);
+                opacity: 0;
+                filter: blur(4px) drop-shadow(0 0 0 transparent);
+            }
+            25% {
+                opacity: 1;
+                filter: blur(0px) drop-shadow(0 0 15px var(--accent-amber));
+            }
+            70% {
+                opacity: 0.9;
+            }
+            100% {
+                transform: translate(var(--x-dest, -50%), -95px) scale(1.1) rotate(var(--r-dest, 10deg));
+                opacity: 0;
+            }
+        }
+
         @media (max-width: 1400px) { .grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 1250px) { .analytics-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 1100px) { .cards-list-layout { grid-template-columns: repeat(2, 1fr); } }
@@ -557,7 +608,9 @@
 
     <div class="glass">
         <h3>🔥 Current Streak</h3>
-        <div class="num" id="streakDisplay">0</div>
+        <div class="streak-container" id="streakCardContainer">
+            <div class="num" id="streakDisplay">0</div>
+        </div>
         <p class="sub-metric" id="streakSubText">Consecutive Goal Hits</p>
     </div>
 </div>
@@ -667,6 +720,7 @@
     const resetEngineBtn = document.getElementById("resetEngineBtn");
     const streakDisplay = document.getElementById("streakDisplay");
     const streakSubText = document.getElementById("streakSubText");
+    const streakCardContainer = document.getElementById("streakCardContainer");
     const vaultDrawer = document.getElementById("vaultDrawer");
     const vaultCardsContainer = document.getElementById("vaultCardsContainer");
     const targetHoursValDisplay = document.getElementById("targetHoursValDisplay");
@@ -895,6 +949,33 @@
         }
     }
 
+    // Helper to fire the floating trophies burst animation layout triggers cleanly
+    function fireStreakMilestoneAnimation() {
+        streakDisplay.classList.remove("streak-pop");
+        void streakDisplay.offsetWidth; // Force layout repaint reflow context
+        streakDisplay.classList.add("streak-pop");
+
+        const configurations = [
+            { x: "-50%", r: "0deg" },
+            { x: "-110%", r: "-25deg" },
+            { x: "10%", r: "25deg" }
+        ];
+
+        configurations.forEach(config => {
+            const trophy = document.createElement("div");
+            trophy.className = "floating-trophy";
+            trophy.textContent = "🏆";
+            trophy.style.setProperty('--x-dest', config.x);
+            trophy.style.setProperty('--r-dest', config.r);
+
+            streakCardContainer.appendChild(trophy);
+
+            trophy.addEventListener("animationend", () => {
+                trophy.remove();
+            });
+        });
+    }
+
     function updateUIDisplay() {
         let totalTimeMs = computeCurrentSessionDuration();
         chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
@@ -911,7 +992,24 @@
         
         // Update the streak box immediately if the goal is met today
         let isTargetAchieved = totalTimeMs >= targetMs;
-        streakDisplay.textContent = isTargetAchieved ? (state.streak + 1) : state.streak;
+        let expectedStreakVal = isTargetAchieved ? (state.streak + 1) : state.streak;
+        
+        // Detect state transition inflection point to execute premium bursts safely
+        if (streakDisplay.textContent !== String(expectedStreakVal)) {
+            streakDisplay.textContent = expectedStreakVal;
+            if (isTargetAchieved) {
+                fireStreakMilestoneAnimation();
+            }
+        }
+        
+        // Handle direct persistent color stabilization fallback look states on boot
+        if (isTargetAchieved) {
+            streakDisplay.style.color = "var(--accent-green)";
+        } else {
+            streakDisplay.style.color = "var(--text-primary)";
+            streakDisplay.classList.remove("streak-pop");
+        }
+
         streakSubText.textContent = "Consecutive Goal Hits";
 
         // Fixed elapsed notation framework here to use user-friendly text tokens
