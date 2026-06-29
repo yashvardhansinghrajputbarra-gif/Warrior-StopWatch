@@ -899,9 +899,6 @@
         let totalTimeMs = computeCurrentSessionDuration();
         chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
         
-        streakDisplay.textContent = state.streak;
-        streakSubText.textContent = "Consecutive Goal Hits";
-
         // Force min-limit constraint verification engine blocks
         if (state.targetHours < 5) state.targetHours = 5;
 
@@ -912,13 +909,18 @@
         let targetMs = state.targetHours * 60 * 60 * 1000;
         let pct = Math.min(100, (totalTimeMs / targetMs) * 100);
         
+        // Update the streak box immediately if the goal is met today
+        let isTargetAchieved = totalTimeMs >= targetMs;
+        streakDisplay.textContent = isTargetAchieved ? (state.streak + 1) : state.streak;
+        streakSubText.textContent = "Consecutive Goal Hits";
+
         // Fixed elapsed notation framework here to use user-friendly text tokens
         let elapsedFormatted = formatProgressElapsedText(totalTimeMs);
         progressText.textContent = `${elapsedFormatted} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
         progressBar.style.width = `${pct}%`;
 
         // Target Remaining & Real-time Milestone Pop-up Logic Execution Node
-        if (totalTimeMs >= targetMs) {
+        if (isTargetAchieved) {
             remainingTargetText.textContent = "Goal Achieved! 🎉";
             remainingTargetText.style.color = "var(--accent-green)";
             
