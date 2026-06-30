@@ -241,7 +241,6 @@
             color: var(--text-primary);
             margin-bottom: 12px;
             white-space: nowrap;
-            transition: color 0.4s ease, transform 0.4s ease;
         }
 
         .timeline-body-wrapper {
@@ -439,6 +438,7 @@
         .badge-elite { background: rgba(52, 199, 89, 0.15); color: #34c759; }
         .badge-critical { background: rgba(255, 59, 48, 0.15); color: #ff3b30; }
         .badge-amber { background: rgba(255, 149, 0, 0.15); color: #ff9500; }
+        .badge-saved { background: rgba(142, 142, 147, 0.2); color: #aeaeb2; }
 
         .card-metrics-block {
             background: rgba(0, 0, 0, 0.15); padding: 12px; border-radius: 10px; text-align: center;
@@ -511,54 +511,30 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* --- STREAK ACHIEVED PREMIUM ANIMATION ELEMENTS --- */
-        .streak-container {
-            position: relative;
-            display: inline-block;
+        /* Freeze Button Layout Element styling */
+        .freeze-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-
-        .streak-pop {
-            animation: textScalePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            color: var(--accent-green) !important;
+        .freeze-btn:hover:not(:disabled) {
+            background: rgba(255, 149, 0, 0.15);
+            border-color: rgba(255, 149, 0, 0.3);
+            color: #ff9500;
         }
-
-        @keyframes textScalePop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.25); }
-            100% { transform: scale(1); }
-        }
-
-        .floating-trophy {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            font-size: 38px;
-            pointer-events: none;
-            user-select: none;
-            opacity: 0;
-            transform: translate(-50%, 0) scale(0.5);
-            filter: drop-shadow(0 0 12px rgba(255, 149, 0, 0.6));
-            animation: trophyFloatUpOut 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            z-index: 10;
-        }
-
-        @keyframes trophyFloatUpOut {
-            0% {
-                transform: translate(-50%, 15px) scale(0.4) rotate(-15deg);
-                opacity: 0;
-                filter: blur(4px) drop-shadow(0 0 0 transparent);
-            }
-            25% {
-                opacity: 1;
-                filter: blur(0px) drop-shadow(0 0 15px var(--accent-amber));
-            }
-            70% {
-                opacity: 0.9;
-            }
-            100% {
-                transform: translate(var(--x-dest, -50%), -95px) scale(1.1) rotate(var(--r-dest, 10deg));
-                opacity: 0;
-            }
+        .freeze-btn:disabled {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            cursor: not-allowed;
         }
 
         @media (max-width: 1400px) { .grid { grid-template-columns: repeat(2, 1fr); } }
@@ -608,10 +584,10 @@
 
     <div class="glass">
         <h3>🔥 Current Streak</h3>
-        <div class="streak-container" id="streakCardContainer">
-            <div class="num" id="streakDisplay">0</div>
-        </div>
+        <div class="num" id="streakDisplay">0</div>
         <p class="sub-metric" id="streakSubText">Consecutive Goal Hits</p>
+        <p class="sub-metric" id="coinDisplay" style="margin-top: 6px; font-weight: 600; opacity: 0.85; color: #ffd700;">🪙 Wallet: 0 Coins</p>
+        <button class="freeze-btn" id="freezeStreakBtn">🛡️ Freeze Streak (Uses 1 Coin)</button>
     </div>
 </div>
 
@@ -665,9 +641,9 @@
 
 <div id="successOverlay" class="success-overlay">
     <div class="success-popup">
-        <div class="success-icon">🏆</div>
-        <h2 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;">Target Achieved!</h2>
-        <p style="margin: 0 0 28px 0; font-size: 14px; color: var(--text-secondary); line-height: 1.5;">
+        <div class="success-icon" id="successIcon">🏆</div>
+        <h2 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;" id="successTitle">Target Achieved!</h2>
+        <p style="margin: 0 0 28px 0; font-size: 14px; color: var(--text-secondary); line-height: 1.5;" id="successMessage">
             You have successfully crushed your focus goal for today. Keep defending the streak, warrior.
         </p>
         <button class="dismiss-btn" id="closeSuccessBtn">Dismiss</button>
@@ -682,25 +658,24 @@
     // State Space Definition mapping question log schemas
     let state = JSON.parse(localStorage.getItem("warrior_chrono_state") || "{}");
     
-    // Popup tracking state variable
+    // Popup tracking state variables
     let popupFiredToday = false;
+    let coinAwardedToday = false;
 
     // Helper to determine the default target hours strictly based on current day of week
     function getAutomatedTargetHours() {
         let now = new Date();
-        // If it's before 4 AM, the true "tracking day" is actually yesterday
         if (now.getHours() < 4) {
             let yesterday = new Date(now.getTime());
             yesterday.setDate(yesterday.getDate() - 1);
             return yesterday.getDay() === 0 ? 11.5 : 8.5;
         }
-        return now.getDay() === 0 ? 11.5 : 8.5; // Sunday: 11.5h (11h 30m), Mon-Sat: 8.5h (8h 30m)
+        return now.getDay() === 0 ? 11.5 : 8.5; 
     }
 
     // Fallback Initializer Framework
     function initFallbackState() {
-        if (state.streak === undefined) state.streak = 0;
-        if (state.shieldActive === undefined) state.shieldActive = false;
+        if (state.streak === undefined) state.streak = 3; // Kept your current verified streak setting intact
         if (state.accumulatedTime === undefined) state.accumulatedTime = 0;
         if (state.engineActive === undefined) state.engineActive = false;
         if (state.sessionStartTime === undefined) state.sessionStartTime = 0;
@@ -709,6 +684,10 @@
         if (state.lastRolloverTimestamp === undefined) {
             state.lastRolloverTimestamp = Date.now();
         }
+        // New Clutter-Free Coin Economy Elements
+        if (state.warriorCoins === undefined) state.warriorCoins = 0;
+        if (state.coinUsedToday === undefined) state.coinUsedToday = false;
+        if (state.lastCoinUsedTimestamp === undefined) state.lastCoinUsedTimestamp = 0;
     }
     initFallbackState();
 
@@ -720,7 +699,8 @@
     const resetEngineBtn = document.getElementById("resetEngineBtn");
     const streakDisplay = document.getElementById("streakDisplay");
     const streakSubText = document.getElementById("streakSubText");
-    const streakCardContainer = document.getElementById("streakCardContainer");
+    const coinDisplay = document.getElementById("coinDisplay");
+    const freezeStreakBtn = document.getElementById("freezeStreakBtn");
     const vaultDrawer = document.getElementById("vaultDrawer");
     const vaultCardsContainer = document.getElementById("vaultCardsContainer");
     const targetHoursValDisplay = document.getElementById("targetHoursValDisplay");
@@ -733,6 +713,9 @@
     const remainingTargetText = document.getElementById("remainingTargetText");
     const successOverlay = document.getElementById("successOverlay");
     const closeSuccessBtn = document.getElementById("closeSuccessBtn");
+    const successIcon = document.getElementById("successIcon");
+    const successTitle = document.getElementById("successTitle");
+    const successMessage = document.getElementById("successMessage");
 
     // Timeline Visual DOM Mapping Output Nodes
     const timelineDayDisplay = document.getElementById("timelineDayDisplay");
@@ -751,7 +734,6 @@
         localStorage.setItem("warrior_chrono_state", JSON.stringify(state));
     }
 
-    // Convert hour decimal numbers into precise human readable string mapping (e.g. 5.5 -> "5h 30m")
     function formatTargetHoursText(hoursVal) {
         let hrs = Math.floor(hoursVal);
         let mins = Math.round((hoursVal - hrs) * 60);
@@ -759,7 +741,6 @@
         return `${hrs}h ${mmStr}m`;
     }
 
-    // New format helper to convert Milliseconds into scannable clean text configurations
     function formatProgressElapsedText(ticks) {
         let totalMinutes = Math.floor(ticks / 60000);
         if (totalMinutes < 60) {
@@ -770,7 +751,6 @@
         return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
     }
 
-    // Custom helper specifically designed for formatting analytics aggregated time views safely
     function formatAnalyticsTime(ticks) {
         let totalMinutes = Math.floor(ticks / 60000);
         let hrs = Math.floor(totalMinutes / 60);
@@ -795,7 +775,6 @@
         return state.accumulatedTime + (Date.now() - state.sessionStartTime);
     }
 
-    // Parsers to handle analytical duration string extraction ("HH:MM:SS" -> Ms Numbers)
     function parseDurationStringToMs(timeString) {
         try {
             let parts = timeString.split(':');
@@ -808,11 +787,8 @@
         }
     }
 
-    // Direct Calendar Time Node Calculations matching Base Code logic engine rules
     function getTrackerTimelineMetrics() {
         let now = new Date();
-        
-        // 4 AM Shift processing matching Base Code rules
         let targetNow = new Date(now.getTime());
         if (now.getHours() < 4) {
             targetNow.setDate(targetNow.getDate() - 1);
@@ -832,20 +808,16 @@
         return { currentDayNum, daysRemaining, dateStr };
     }
 
-    // Comprehensive Aggregator engine processing Analytics Modules
     function updateAnalyticsPanel() {
         let logs = state.historyLogs || [];
         let now = new Date();
         
-        // Adjust for 4 AM shift logic context windowing
         let currentAnchor = new Date(now.getTime());
         if (now.getHours() < 4) {
             currentAnchor.setDate(currentAnchor.getDate() - 1);
         }
 
         let liveMs = computeCurrentSessionDuration();
-
-        // 1. Peak Log Computation Engine
         let maxMs = 0;
         let peakDayStr = "None";
         
@@ -866,7 +838,6 @@
         peakDisplay.textContent = formatAnalyticsTime(maxMs);
         peakSubText.textContent = `Achieved on ${peakDayStr}`;
 
-        // Helpers to isolate contextual date metrics across historical log slots
         function extractLogDate(logItem) {
             if(logItem.timestamp) return new Date(logItem.timestamp);
             return new Date(Date.parse(logItem.dateStr + " " + now.getFullYear()) || Date.now());
@@ -875,11 +846,10 @@
         function getStartOfWeek(dateObj) {
             let d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
             let day = d.getDay();
-            let diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday initialization rule standard
+            let diff = d.getDate() - day + (day === 0 ? -6 : 1); 
             return new Date(d.setDate(diff));
         }
 
-        // 2. Weekly Aggregate Module
         let startOfCurrentWeek = getStartOfWeek(currentAnchor);
         let startOfLastWeek = new Date(startOfCurrentWeek.getTime());
         startOfLastWeek.setDate(startOfLastWeek.getDate() - 7);
@@ -903,7 +873,6 @@
         weeklyDisplay.textContent = formatAnalyticsTime(currentWeekMs);
         weeklySubText.textContent = `Prev Week: ${formatAnalyticsTime(lastWeekMs)}`;
 
-        // 3. Monthly Aggregate Module
         let currentMonthIdx = currentAnchor.getMonth();
         let currentYearVal = currentAnchor.getFullYear();
 
@@ -932,12 +901,10 @@
         monthlySubText.textContent = `Prev Month: ${formatAnalyticsTime(lastMonthMs)}`;
     }
 
-    // Handles the core 6:00 AM visibility lock logic for Target Controls
     function updateTargetButtonsVisibility() {
         let now = new Date();
         let currentHour = now.getHours();
 
-        // Target adjustment permitted strictly from 4:00 AM to 5:59:59 AM
         if (currentHour >= 4 && currentHour < 6) {
             decTargetBtn.style.display = "flex";
             incTargetBtn.style.display = "flex";
@@ -949,80 +916,80 @@
         }
     }
 
-    // Helper to fire the floating trophies burst animation layout triggers cleanly
-    function fireStreakMilestoneAnimation() {
-        streakDisplay.classList.remove("streak-pop");
-        void streakDisplay.offsetWidth; // Force layout repaint reflow context
-        streakDisplay.classList.add("streak-pop");
-
-        const configurations = [
-            { x: "-50%", r: "0deg" },
-            { x: "-110%", r: "-25deg" },
-            { x: "10%", r: "25deg" }
-        ];
-
-        configurations.forEach(config => {
-            const trophy = document.createElement("div");
-            trophy.className = "floating-trophy";
-            trophy.textContent = "🏆";
-            trophy.style.setProperty('--x-dest', config.x);
-            trophy.style.setProperty('--r-dest', config.r);
-
-            streakCardContainer.appendChild(trophy);
-
-            trophy.addEventListener("animationend", () => {
-                trophy.remove();
-            });
-        });
-    }
-
     function updateUIDisplay() {
         let totalTimeMs = computeCurrentSessionDuration();
         chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
         
-        // Force min-limit constraint verification engine blocks
         if (state.targetHours < 5) state.targetHours = 5;
 
-        // Custom Stepper display and state modifier rendering logic
         targetHoursValDisplay.textContent = formatTargetHoursText(state.targetHours);
         decTargetBtn.disabled = (state.targetHours <= 5);
 
         let targetMs = state.targetHours * 60 * 60 * 1000;
         let pct = Math.min(100, (totalTimeMs / targetMs) * 100);
         
-        // Update the streak box immediately if the goal is met today
         let isTargetAchieved = totalTimeMs >= targetMs;
-        let expectedStreakVal = isTargetAchieved ? (state.streak + 1) : state.streak;
         
-        // Detect state transition inflection point to execute premium bursts safely
-        if (streakDisplay.textContent !== String(expectedStreakVal)) {
-            streakDisplay.textContent = expectedStreakVal;
-            if (isTargetAchieved) {
-                fireStreakMilestoneAnimation();
+        // Instant Real-time Multiple-of-7 Coin Drop evaluation engine
+        if (isTargetAchieved && !coinAwardedToday && !state.coinUsedToday) {
+            let potentialNextStreak = state.streak + 1;
+            if (potentialNextStreak % 7 === 0) {
+                state.warriorCoins += 1;
+                coinAwardedToday = true;
+                saveState();
+                
+                // Transform existing single popup layout instantly into gold milestone style
+                successIcon.textContent = "🪙";
+                successTitle.textContent = "Milestone Achieved!";
+                successMessage.textContent = `Epic work! You reached a continuous ${potentialNextStreak}-day streak and earned 1 Warrior Coin!`;
+            } else {
+                successIcon.textContent = "🏆";
+                successTitle.textContent = "Target Achieved!";
+                successMessage.textContent = "You have successfully crushed your focus goal for today. Keep defending the streak, warrior.";
             }
         }
-        
-        // Handle direct persistent color stabilization fallback look states on boot
-        if (isTargetAchieved) {
-            streakDisplay.style.color = "var(--accent-green)";
+
+        streakDisplay.textContent = (isTargetAchieved && !state.coinUsedToday) ? (state.streak + 1) : state.streak;
+        streakSubText.textContent = "Consecutive Goal Hits";
+        coinDisplay.textContent = `🪙 Wallet: ${state.warriorCoins} Coin${state.warriorCoins === 1 ? '' : 's'}`;
+
+        // Freeze Button Interactive State Management
+        let oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
+        let cooldownCleared = (Date.now() - state.lastCoinUsedTimestamp) >= oneWeekInMs;
+
+        if (state.coinUsedToday) {
+            freezeStreakBtn.disabled = true;
+            freezeStreakBtn.textContent = "🛡️ Streak Secured for Today";
+            freezeStreakBtn.style.borderColor = "var(--accent-green)";
+            freezeStreakBtn.style.color = "var(--accent-green)";
+        } else if (state.warriorCoins <= 0) {
+            freezeStreakBtn.disabled = true;
+            freezeStreakBtn.textContent = "🛡️ Freeze Locked (0 Coins Available)";
+            freezeStreakBtn.style.borderColor = "rgba(255,255,255,0.05)";
+            freezeStreakBtn.style.color = "var(--text-muted)";
+        } else if (!cooldownCleared) {
+            freezeStreakBtn.disabled = true;
+            freezeStreakBtn.textContent = "🛡️ Cooldown Active (Once per Week)";
+            freezeStreakBtn.style.borderColor = "rgba(255,255,255,0.05)";
+            freezeStreakBtn.style.color = "var(--text-muted)";
         } else {
-            streakDisplay.style.color = "var(--text-primary)";
-            streakDisplay.classList.remove("streak-pop");
+            freezeStreakBtn.disabled = false;
+            freezeStreakBtn.textContent = "🛡️ Freeze Streak (Uses 1 Coin)";
+            freezeStreakBtn.style.borderColor = "rgba(255, 255, 255, 0.1)";
+            freezeStreakBtn.style.color = "var(--text-primary)";
         }
 
-        streakSubText.textContent = "Consecutive Goal Hits";
-
-        // Fixed elapsed notation framework here to use user-friendly text tokens
         let elapsedFormatted = formatProgressElapsedText(totalTimeMs);
         progressText.textContent = `${elapsedFormatted} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
         progressBar.style.width = `${pct}%`;
 
-        // Target Remaining & Real-time Milestone Pop-up Logic Execution Node
-        if (isTargetAchieved) {
+        if (state.coinUsedToday) {
+            remainingTargetText.textContent = "Streak Secured for Today! 🛡️";
+            remainingTargetText.style.color = "var(--text-secondary)";
+        } else if (isTargetAchieved) {
             remainingTargetText.textContent = "Goal Achieved! 🎉";
             remainingTargetText.style.color = "var(--accent-green)";
             
-            // Trigger the success milestone layout overlay precisely once when crossed
             if (!popupFiredToday) {
                 popupFiredToday = true;
                 successOverlay.style.display = "flex";
@@ -1032,23 +999,30 @@
             let remainingMs = targetMs - totalTimeMs;
             remainingTargetText.textContent = `Remaining: ${formatProgressElapsedText(remainingMs)}`;
             remainingTargetText.style.color = "var(--accent-amber)";
-            popupFiredToday = false; // Reset lock gate if target parameters shift up
+            popupFiredToday = false; 
         }
 
-        // Live Dynamic updates targeting timeline panel box elements
         let timeline = getTrackerTimelineMetrics();
         timelineDayDisplay.textContent = `Day ${timeline.currentDayNum}`;
         timelineRemainingDisplay.textContent = `(${timeline.daysRemaining} Days Left)`;
         timelineDateDisplay.textContent = timeline.dateStr;
 
-        // Enforce the 6:00 AM target modification lock
         updateTargetButtonsVisibility();
-
-        // Keep core performance metrics aligned dynamically
         updateAnalyticsPanel();
     }
 
-    // Interactivity Control Systems for the Step Tracker Configuration Layouts
+    // Manual Freeze Trigger Execution Block 
+    freezeStreakBtn.addEventListener("click", () => {
+        if (state.warriorCoins > 0 && !state.coinUsedToday) {
+            if (confirm("Spend 1 Warrior Coin to freeze your current streak? Your configuration will show SAVED inside your archive log, and your streak won't break if you halt your session early.")) {
+                state.warriorCoins--;
+                state.coinUsedToday = true;
+                saveState();
+                updateUIDisplay();
+            }
+        }
+    });
+
     decTargetBtn.addEventListener("click", () => {
         if (state.targetHours > 5) {
             state.targetHours = Math.max(5, state.targetHours - 0.5);
@@ -1069,18 +1043,16 @@
         updateUIDisplay();
     });
 
-    // 4 AM Temporal Engine Rollover Module
+    // Modified 4:00 AM Temporal Rollover Engine matching your simple clutter-free rules
     function evaluateTemporalRollover() {
         let now = new Date();
         let lastRollover = new Date(state.lastRolloverTimestamp);
         
-        // Calculate the boundary threshold date representing the last recorded day's 4 AM
         let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 4, 0, 0, 0, 0);
         if (lastRollover.getHours() < 4) {
             boundary.setDate(boundary.getDate() - 1);
         }
 
-        // Calculate the target rollover boundary for the current timeline context
         let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0, 0);
         if (now.getHours() < 4) {
             currentBoundary.setDate(currentBoundary.getDate() - 1);
@@ -1096,29 +1068,27 @@
             let badgeType = "badge-critical";
             let badgeText = "Failed";
 
-            // Historical calculation values matching layout
             let timeline = getTrackerTimelineMetrics();
 
-            if (passedTarget) {
+            if (state.coinUsedToday) {
+                // Scenario 1: Coin Was Intentionally Activated
+                badgeType = "badge-saved";
+                badgeText = "SAVED";
+                state.lastCoinUsedTimestamp = Date.now(); // Set the cooldown timestamp record right at rollover
+            } else if (passedTarget) {
+                // Scenario 2: Normal Target Success
                 state.streak++;
-                state.shieldActive = false; // Reset shield status to default ready state
                 badgeType = "badge-elite";
                 badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
             } else {
-                // Shield can ONLY be utilized or exist if current streak was already active prior to this failure day cycle
-                if (state.streak > 0 && !state.shieldActive) {
-                    state.shieldActive = true; // Engage protection node state for current tracking layout view
-                    badgeType = "badge-amber";
-                    badgeText = "Shielded";
-                } else {
-                    state.streak = 0;
-                    state.shieldActive = false;
-                }
+                // Scenario 3: Missing target completely without coin protection
+                state.streak = 0; 
+                badgeType = "badge-critical";
+                badgeText = "Failed";
             }
 
-            // Log entry creation with explicit system tracking timestamps
             state.historyLogs.unshift({
-                day: timeline.currentDayNum - 1, // Log for the completed day block
+                day: timeline.currentDayNum - 1, 
                 dateStr: lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 durationText: timeString,
                 statusBadgeClass: badgeType,
@@ -1126,12 +1096,13 @@
                 timestamp: lastRollover.getTime()
             });
 
-            // Re-initialize focus state metrics space for automated system mapping
             state.accumulatedTime = 0;
             state.sessionStartTime = Date.now();
             state.lastRolloverTimestamp = Date.now();
-            state.targetHours = getAutomatedTargetHours(); // Reset to current day schedule baseline dynamically
-            popupFiredToday = false; // Reset the popup gate tracking lock for the new day
+            state.targetHours = getAutomatedTargetHours(); 
+            state.coinUsedToday = false; // Wipe activation state parameters for the upcoming cycle
+            popupFiredToday = false; 
+            coinAwardedToday = false;
             
             saveState();
             updateUIDisplay();
@@ -1163,7 +1134,6 @@
         });
     }
 
-    // Interactive Core Tracking State Loop Rules
     function toggleSession() {
         evaluateTemporalRollover();
         if (!state.engineActive) {
@@ -1188,32 +1158,26 @@
 
     toggleBtn.addEventListener("click", toggleSession);
 
-    // Global Key Interception Listener Module (F1 & Spacebar Shortcuts)
     window.addEventListener("keydown", (e) => {
-        // Handle F1 hotkey definition shortcut logic
         if (e.key === "F1") {
             e.preventDefault(); 
             toggleSession();
         }
-        
-        // Handle Spacebar layout execution activation toggles
         if (e.key === " " || e.code === "Space") {
-            // Safety measure: ignore shortcut trigger if user is actively writing inside an input or button interaction component zone
             const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
             if (activeTag !== "input" && activeTag !== "textarea" && activeTag !== "button") {
-                e.preventDefault(); // Prevents default browser page jumping / layout scrolling behaviors
+                e.preventDefault(); 
                 toggleSession();
             }
         }
     });
 
-    // Reset Engine Logic Action
     resetEngineBtn.addEventListener("click", () => {
         if (confirm("Are you sure you want to reset the current day's focus time? This cannot be undone.")) {
             state.accumulatedTime = 0;
             state.engineActive = false;
             state.sessionStartTime = 0;
-            popupFiredToday = false; // Reset popup threshold condition states
+            popupFiredToday = false; 
             
             clearInterval(mainLoopInterval);
             toggleBtn.textContent = "▶ Start Session";
@@ -1224,14 +1188,14 @@
         }
     });
 
-    // Hard Reset Core Execution Framework Engine
     hardResetBtn.addEventListener("click", () => {
-        if (confirm("☢️ SYSTEM HARD RESET WARNING:\n\nThis will completely wipe your streak records, focus configurations, and clear the entire Performance Archive Vault permanently.\n\nAre you sure you want to proceed?")) {
+        if (confirm("☢️ SYSTEM HARD RESET WARNING:\n\nThis will completely wipe your streak records, coin configuration levels, and clear the entire Performance Archive Vault permanently.\n\nAre you sure you want to proceed?")) {
             clearInterval(mainLoopInterval);
             localStorage.removeItem("warrior_chrono_state");
             state = {};
             initFallbackState();
             popupFiredToday = false;
+            coinAwardedToday = false;
             
             toggleBtn.textContent = "▶ Start Session";
             toggleBtn.className = "run-active";
@@ -1245,7 +1209,6 @@
         }
     });
 
-    // Vault Slider Panel Drawer Management Triggers
     document.getElementById("openHistoryBtn").addEventListener("click", () => {
         evaluateTemporalRollover();
         renderVaultDrawer();
@@ -1258,13 +1221,11 @@
         setTimeout(() => vaultDrawer.style.display = "none", 400);
     });
 
-    // Dismiss Button Event Listener for Success Popup
     closeSuccessBtn.addEventListener("click", () => {
         successOverlay.classList.remove("show");
         setTimeout(() => successOverlay.style.display = "none", 400);
     });
 
-    // Boot Initialization Hooks
     evaluateTemporalRollover();
     updateUIDisplay();
 
