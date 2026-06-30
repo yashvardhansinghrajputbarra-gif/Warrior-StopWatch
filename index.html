@@ -6,7 +6,6 @@
     <title>Warrior Neet Focus</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230071e3%22 opacity=%220.15%22/><circle cx=%2250%22 cy=%2250%22 r=%2232%22 fill=%22none%22 stroke=%22%230071e3%22 stroke-width=%224.5%22/><circle cx=%2250%22 cy=%2250%22 r=%2214%22 fill=%22%23ff3b30%22/><path d=%22M50 8 L50 22 M50 78 L50 92 M8 50 L22 50 M78 50 L92 50%22 stroke=%22%23ffffff%22 stroke-width=%225.5%22 stroke-linecap=%22round%22/></svg>">
     <style>
-        /* Design Variables System mapping original token sheets */
         :root {
             --apple-glass: rgba(22, 22, 30, 0.45);
             --apple-glass-hover: rgba(32, 32, 45, 0.55);
@@ -149,7 +148,6 @@
         }
         .target-header h3 { margin: 0; }
 
-        /* Timeline Box Header Styles */
         .timeline-header {
             display: flex;
             justify-content: space-between;
@@ -168,7 +166,6 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
-        /* Custom Custom Stepper Interface Framework */
         .stepper-container {
             display: flex;
             align-items: center;
@@ -384,7 +381,6 @@
             transform: translateY(-1px);
         }
 
-        /* Vault Sliding Drawer System Styles */
         .drawer-backdrop { 
             display: none; 
             position: fixed; 
@@ -448,7 +444,6 @@
 
         .void-message { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 0; letter-spacing: 0.2px; width: 100%; grid-column: span 3; }
 
-        /* Success Pop-up Overlay Design Tokens */
         .success-overlay {
             position: fixed;
             top: 0;
@@ -511,7 +506,6 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Freeze Button Layout Element styling */
         .freeze-btn {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -651,18 +645,14 @@
 </div>
 
 <script>
-    // Configured Static Timeline Boundaries
     const START_DATE = new Date(2026, 2, 14, 4, 0, 0); 
     const TARGET_DATE = new Date(2027, 4, 2, 4, 0, 0);  
 
-    // State Space Definition mapping question log schemas
     let state = JSON.parse(localStorage.getItem("warrior_chrono_state") || "{}");
     
-    // Popup tracking state variables
     let popupFiredToday = false;
     let coinAwardedToday = false;
 
-    // Helper to determine the default target hours strictly based on current day of week
     function getAutomatedTargetHours() {
         let now = new Date();
         if (now.getHours() < 4) {
@@ -673,9 +663,8 @@
         return now.getDay() === 0 ? 11.5 : 8.5; 
     }
 
-    // Fallback Initializer Framework
     function initFallbackState() {
-        if (state.streak === undefined) state.streak = 3; // Kept your current verified streak setting intact
+        if (state.streak === undefined) state.streak = 3; 
         if (state.accumulatedTime === undefined) state.accumulatedTime = 0;
         if (state.engineActive === undefined) state.engineActive = false;
         if (state.sessionStartTime === undefined) state.sessionStartTime = 0;
@@ -684,7 +673,6 @@
         if (state.lastRolloverTimestamp === undefined) {
             state.lastRolloverTimestamp = Date.now();
         }
-        // New Clutter-Free Coin Economy Elements
         if (state.warriorCoins === undefined) state.warriorCoins = 0;
         if (state.coinUsedToday === undefined) state.coinUsedToday = false;
         if (state.lastCoinUsedTimestamp === undefined) state.lastCoinUsedTimestamp = 0;
@@ -693,7 +681,6 @@
 
     let mainLoopInterval = null;
 
-    // DOM Reference Registry
     const chronoDisplay = document.getElementById("chronoDisplay");
     const toggleBtn = document.getElementById("toggleBtn");
     const resetEngineBtn = document.getElementById("resetEngineBtn");
@@ -717,12 +704,10 @@
     const successTitle = document.getElementById("successTitle");
     const successMessage = document.getElementById("successMessage");
 
-    // Timeline Visual DOM Mapping Output Nodes
     const timelineDayDisplay = document.getElementById("timelineDayDisplay");
     const timelineRemainingDisplay = document.getElementById("timelineRemainingDisplay");
     const timelineDateDisplay = document.getElementById("timelineDateDisplay");
 
-    // Analytics Reference Nodes
     const peakDisplay = document.getElementById("peakDisplay");
     const peakSubText = document.getElementById("peakSubText");
     const weeklyDisplay = document.getElementById("weeklyDisplay");
@@ -930,7 +915,6 @@
         
         let isTargetAchieved = totalTimeMs >= targetMs;
         
-        // Instant Real-time Multiple-of-7 Coin Drop evaluation engine
         if (isTargetAchieved && !coinAwardedToday && !state.coinUsedToday) {
             let potentialNextStreak = state.streak + 1;
             if (potentialNextStreak % 7 === 0) {
@@ -938,7 +922,6 @@
                 coinAwardedToday = true;
                 saveState();
                 
-                // Transform existing single popup layout instantly into gold milestone style
                 successIcon.textContent = "🪙";
                 successTitle.textContent = "Milestone Achieved!";
                 successMessage.textContent = `Epic work! You reached a continuous ${potentialNextStreak}-day streak and earned 1 Warrior Coin!`;
@@ -953,7 +936,8 @@
         streakSubText.textContent = "Consecutive Goal Hits";
         coinDisplay.textContent = `🪙 Wallet: ${state.warriorCoins} Coin${state.warriorCoins === 1 ? '' : 's'}`;
 
-        // Freeze Button Interactive State Management
+        // 75% Progress Guardrail Calculations
+        let progressRequirementMet = pct >= 75.0;
         let oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
         let cooldownCleared = (Date.now() - state.lastCoinUsedTimestamp) >= oneWeekInMs;
 
@@ -970,6 +954,11 @@
         } else if (!cooldownCleared) {
             freezeStreakBtn.disabled = true;
             freezeStreakBtn.textContent = "🛡️ Cooldown Active (Once per Week)";
+            freezeStreakBtn.style.borderColor = "rgba(255,255,255,0.05)";
+            freezeStreakBtn.style.color = "var(--text-muted)";
+        } else if (!progressRequirementMet) {
+            freezeStreakBtn.disabled = true;
+            freezeStreakBtn.textContent = "🛡️ Locked (Requires 75% Progress)";
             freezeStreakBtn.style.borderColor = "rgba(255,255,255,0.05)";
             freezeStreakBtn.style.color = "var(--text-muted)";
         } else {
@@ -1011,8 +1000,16 @@
         updateAnalyticsPanel();
     }
 
-    // Manual Freeze Trigger Execution Block 
     freezeStreakBtn.addEventListener("click", () => {
+        let totalTimeMs = computeCurrentSessionDuration();
+        let targetMs = state.targetHours * 60 * 60 * 1000;
+        let pct = (totalTimeMs / targetMs) * 100;
+
+        if (pct < 75.0) {
+            alert("Anti-loophole Guardrail: You must achieve at least 75% of your target before you can freeze your streak.");
+            return;
+        }
+
         if (state.warriorCoins > 0 && !state.coinUsedToday) {
             if (confirm("Spend 1 Warrior Coin to freeze your current streak? Your configuration will show SAVED inside your archive log, and your streak won't break if you halt your session early.")) {
                 state.warriorCoins--;
@@ -1043,7 +1040,6 @@
         updateUIDisplay();
     });
 
-    // Modified 4:00 AM Temporal Rollover Engine matching your simple clutter-free rules
     function evaluateTemporalRollover() {
         let now = new Date();
         let lastRollover = new Date(state.lastRolloverTimestamp);
@@ -1071,17 +1067,14 @@
             let timeline = getTrackerTimelineMetrics();
 
             if (state.coinUsedToday) {
-                // Scenario 1: Coin Was Intentionally Activated
                 badgeType = "badge-saved";
                 badgeText = "SAVED";
-                state.lastCoinUsedTimestamp = Date.now(); // Set the cooldown timestamp record right at rollover
+                state.lastCoinUsedTimestamp = Date.now(); 
             } else if (passedTarget) {
-                // Scenario 2: Normal Target Success
                 state.streak++;
                 badgeType = "badge-elite";
                 badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
             } else {
-                // Scenario 3: Missing target completely without coin protection
                 state.streak = 0; 
                 badgeType = "badge-critical";
                 badgeText = "Failed";
@@ -1100,7 +1093,7 @@
             state.sessionStartTime = Date.now();
             state.lastRolloverTimestamp = Date.now();
             state.targetHours = getAutomatedTargetHours(); 
-            state.coinUsedToday = false; // Wipe activation state parameters for the upcoming cycle
+            state.coinUsedToday = false; 
             popupFiredToday = false; 
             coinAwardedToday = false;
             
