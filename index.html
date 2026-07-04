@@ -2,7 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="B44bySSFlpNAb5JTwGNOxjKcbdqOMNw6LsOH4i_bL5Q" />
+    
+    <title>Warrior Neet Focus</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230071e3%22 opacity=%220.15%22/><circle cx=%2250%22 cy=%2250%22 r=%2232%22 fill=%22none%22 stroke=%22%230071e3%22 stroke-width=%224.5%22/><circle cx=%2250%22 cy=%2250%22 r=%2214%22 fill=%22%23ff3b30%22/><path d=%22M50 8 L50 22 M50 78 L50 92 M8 50 L22 50 M78 50 L92 50%22 stroke=%22%23ffffff%22 stroke-width=%225.5%22 stroke-linecap=%22round%22/></svg>">
+    <style>
+        :root {
+            --apple-glass: rgba(22, 22, 30, 0.45);
+            --apple-glass-hover: rgba(32, 32, 45, 0.55);
+            --apple-border: rgba(255, 255, 255, 0.12);
+            --apple-border-hover: rgba(255, 255, 255, 0.22);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.65);
+            --text-muted: rgba(255, 255, 255, 0.4);
+            --accent-blue: #0071e3;
+            --accent-green: #34c759;
+            --accent-red: #ff3b30;
+            --accent-amber: #ff9500;
+        }
 
+        body {
+            margin: 0;
+            background: #0d0f14;
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            padding: 40px;
+            min-height: 100vh;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            position: relative;
         }
 
         body::before {
@@ -627,12 +657,42 @@
 
     function getAutomatedTargetHours() {
         let now = new Date();
+        
+        // 4:00 AM Guardrail logic: anchor to the logical "study day"
+        let targetNow = new Date(now.getTime());
         if (now.getHours() < 4) {
-            let yesterday = new Date(now.getTime());
-            yesterday.setDate(yesterday.getDate() - 1);
-            return yesterday.getDay() === 0 ? 11.5 : 8.5;
+            targetNow.setDate(targetNow.getDate() - 1);
         }
-        return now.getDay() === 0 ? 11.5 : 8.5; 
+        
+        // If it's a Sunday, look up your exact Lakshya NEET Planner test dates
+        if (targetNow.getDay() === 0) {
+            const year = targetNow.getFullYear();
+            const month = targetNow.getMonth(); // 0 = Jan, 1 = Feb, 6 = July, etc.
+            const date = targetNow.getDate();
+
+            if (year === 2026) {
+                if (month === 3 && (date === 26)) return 5.0; // April 26
+                if (month === 4 && (date === 10 || date === 24)) return 5.0; // May 10, 24
+                if (month === 5 && (date === 7 || date === 21)) return 5.0; // June 7, 21
+                if (month === 6 && (date === 5 || date === 19)) return 5.0; // July 5, 19
+                if (month === 7 && (date === 2 || date === 23)) return 5.0; // Aug 2, 23
+                if (month === 8 && (date === 6 || date === 20)) return 5.0; // Sept 6, 20
+                if (month === 9 && (date === 4 || date === 18)) return 5.0; // Oct 4, 18
+                if (month === 10 && (date === 1 || date === 22)) return 5.0; // Nov 1, 22
+                if (month === 11 && (date === 13 || date === 27)) return 5.0; // Dec 13, 27
+            } 
+            else if (year === 2027) {
+                // High-intensity full syllabus test blocks
+                if (month === 0 && (date === 3 || date === 10 || date === 17 || date === 24 || date === 31)) return 5.0; // Jan All
+                if (month === 1 && (date === 7)) return 5.0; // Feb 7
+                if (month === 2 && (date === 28)) return 5.0; // Mar 28
+                if (month === 3 && (date === 4 || date === 11 || date === 18 || date === 25)) return 5.0; // Apr All
+            }
+
+            return 11.5; // Study Sunday (No test scheduled)
+        }
+        
+        return 8.5; // Standard Weekday/Saturday Target
     }
 
     function initFallbackState() {
@@ -908,7 +968,6 @@
         streakSubText.textContent = "Consecutive Goal Hits";
         coinDisplay.textContent = `🪙 Wallet: ${state.warriorCoins} Coin${state.warriorCoins === 1 ? '' : 's'}`;
 
-        // 75% Progress Guardrail Calculations
         let progressRequirementMet = pct >= 75.0;
         let oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
         let cooldownCleared = (Date.now() - state.lastCoinUsedTimestamp) >= oneWeekInMs;
