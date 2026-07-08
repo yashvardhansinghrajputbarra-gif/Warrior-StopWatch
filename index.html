@@ -646,53 +646,69 @@
     </div>
 </div>
 
-<script>
+<script type="module">
+    // 1. Import Firebase Core and Database Modules from official CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // 2. Your Production Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyD8XKirnXY-LsPMEG2Wnch-uuYB6dLgbro",
+        authDomain: "warrior-neet-trackerop.firebaseapp.com",
+        projectId: "warrior-neet-trackerop",
+        storageBucket: "warrior-neet-trackerop.firebasestorage.app",
+        messagingSenderId: "644118650586",
+        appId: "1:644118650586:web:b104a317182a9c861e4fe3"
+    };
+
+    // 3. Initialize Firebase Engine Instances
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    // 4. Application Configuration Variables
     const START_DATE = new Date(2026, 2, 14, 4, 0, 0); 
     const TARGET_DATE = new Date(2027, 4, 2, 4, 0, 0);  
 
     let state = JSON.parse(localStorage.getItem("warrior_chrono_state") || "{}");
-    
+    let currentUser = null; 
     let popupFiredToday = false;
     let coinAwardedToday = false;
 
+    // 5. Automated Target Strategy Planner
     function getAutomatedTargetHours() {
         let now = new Date();
-        
-        // 4:00 AM Guardrail logic: anchor to the logical "study day"
         let targetNow = new Date(now.getTime());
         if (now.getHours() < 4) {
             targetNow.setDate(targetNow.getDate() - 1);
         }
-        
-        // If it's a Sunday, look up your exact Lakshya NEET Planner test dates
         if (targetNow.getDay() === 0) {
             const year = targetNow.getFullYear();
-            const month = targetNow.getMonth(); // 0 = Jan, 1 = Feb, 6 = July, etc.
+            const month = targetNow.getMonth(); 
             const date = targetNow.getDate();
 
             if (year === 2026) {
-                if (month === 3 && (date === 26)) return 5.0; // April 26
-                if (month === 4 && (date === 10 || date === 24)) return 5.0; // May 10, 24
-                if (month === 5 && (date === 7 || date === 21)) return 5.0; // June 7, 21
-                if (month === 6 && (date === 5 || date === 19)) return 5.0; // July 5, 19
-                if (month === 7 && (date === 2 || date === 23)) return 5.0; // Aug 2, 23
-                if (month === 8 && (date === 6 || date === 20)) return 5.0; // Sept 6, 20
-                if (month === 9 && (date === 4 || date === 18)) return 5.0; // Oct 4, 18
-                if (month === 10 && (date === 1 || date === 22)) return 5.0; // Nov 1, 22
-                if (month === 11 && (date === 13 || date === 27)) return 5.0; // Dec 13, 27
+                if (month === 3 && (date === 26)) return 5.0; 
+                if (month === 4 && (date === 10 || date === 24)) return 5.0; 
+                if (month === 5 && (date === 7 || date === 21)) return 5.0; 
+                if (month === 6 && (date === 5 || date === 19)) return 5.0; 
+                if (month === 7 && (date === 2 || date === 23)) return 5.0; 
+                if (month === 8 && (date === 6 || date === 20)) return 5.0; 
+                if (month === 9 && (date === 4 || date === 18)) return 5.0; 
+                if (month === 10 && (date === 1 || date === 22)) return 5.0; 
+                if (month === 11 && (date === 13 || date === 27)) return 5.0; 
             } 
             else if (year === 2027) {
-                // High-intensity full syllabus test blocks
-                if (month === 0 && (date === 3 || date === 10 || date === 17 || date === 24 || date === 31)) return 5.0; // Jan All
-                if (month === 1 && (date === 7)) return 5.0; // Feb 7
-                if (month === 2 && (date === 28)) return 5.0; // Mar 28
-                if (month === 3 && (date === 4 || date === 11 || date === 18 || date === 25)) return 5.0; // Apr All
+                if (month === 0 && (date === 3 || date === 10 || date === 17 || date === 24 || date === 31)) return 5.0; 
+                if (month === 1 && (date === 7)) return 5.0; 
+                if (month === 2 && (date === 28)) return 5.0; 
+                if (month === 3 && (date === 4 || date === 11 || date === 18 || date === 25)) return 5.0; 
             }
-
-            return 11.5; // Study Sunday (No test scheduled)
+            return 11.5; 
         }
-        
-        return 8.5; // Standard Weekday/Saturday Target
+        return 8.5; 
     }
 
     function initFallbackState() {
@@ -702,9 +718,7 @@
         if (state.sessionStartTime === undefined) state.sessionStartTime = 0;
         if (state.historyLogs === undefined) state.historyLogs = [];
         if (state.targetHours === undefined) state.targetHours = getAutomatedTargetHours(); 
-        if (state.lastRolloverTimestamp === undefined) {
-            state.lastRolloverTimestamp = Date.now();
-        }
+        if (state.lastRolloverTimestamp === undefined) state.lastRolloverTimestamp = Date.now();
         if (state.warriorCoins === undefined) state.warriorCoins = 0;
         if (state.coinUsedToday === undefined) state.coinUsedToday = false;
         if (state.lastCoinUsedTimestamp === undefined) state.lastCoinUsedTimestamp = 0;
@@ -713,6 +727,7 @@
 
     let mainLoopInterval = null;
 
+    // 6. UI Element Mapping
     const chronoDisplay = document.getElementById("chronoDisplay");
     const toggleBtn = document.getElementById("toggleBtn");
     const resetEngineBtn = document.getElementById("resetEngineBtn");
@@ -735,11 +750,9 @@
     const successIcon = document.getElementById("successIcon");
     const successTitle = document.getElementById("successTitle");
     const successMessage = document.getElementById("successMessage");
-
     const timelineDayDisplay = document.getElementById("timelineDayDisplay");
     const timelineRemainingDisplay = document.getElementById("timelineRemainingDisplay");
     const timelineDateDisplay = document.getElementById("timelineDateDisplay");
-
     const peakDisplay = document.getElementById("peakDisplay");
     const peakSubText = document.getElementById("peakSubText");
     const weeklyDisplay = document.getElementById("weeklyDisplay");
@@ -747,22 +760,94 @@
     const monthlyDisplay = document.getElementById("monthlyDisplay");
     const monthlySubText = document.getElementById("monthlySubText");
 
-    function saveState() {
+    // Dynamic Auth Button Insertion
+    const titleContainer = document.querySelector(".title-container");
+    const rightControls = document.createElement("div");
+    rightControls.style.display = "flex";
+    rightControls.style.gap = "12px";
+    rightControls.style.alignItems = "center";
+    
+    const authBtn = document.createElement("button");
+    authBtn.id = "authBtn";
+    authBtn.style.background = "rgba(255, 255, 255, 0.08)";
+    authBtn.style.border = "1px solid rgba(255,255,255,0.1)";
+    authBtn.textContent = "🔑 Sign In";
+    
+    const openHistoryBtn = document.getElementById("openHistoryBtn");
+    titleContainer.insertBefore(rightControls, openHistoryBtn);
+    rightControls.appendChild(authBtn);
+    rightControls.appendChild(openHistoryBtn);
+
+    // 7. Secure Dual-Layer State Sync Layer
+    async function saveState() {
         localStorage.setItem("warrior_chrono_state", JSON.stringify(state));
+        if (currentUser) {
+            try {
+                await setDoc(doc(db, "warrior_users", currentUser.uid), state);
+            } catch (error) {
+                console.error("Cloud database synchronization interrupted:", error);
+            }
+        }
     }
 
+    // 8. Authentication Management & Legacy Data Migration Logic
+    authBtn.addEventListener("click", async () => {
+        if (!currentUser) {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                // Auth listener below handles user initialization
+            } catch (error) {
+                alert("Sign-in failed: " + error.message);
+            }
+        } else {
+            if (confirm("Are you sure you want to log out? Local caching fallback will resume tracking.")) {
+                signOut(auth);
+            }
+        }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            authBtn.textContent = `👤 ${user.displayName.split(' ')[0]}`;
+            authBtn.style.background = "rgba(52, 199, 89, 0.15)";
+            authBtn.style.borderColor = "rgba(52, 199, 89, 0.3)";
+            
+            // Check cloud database for existing cloud sync profile
+            const userDocRef = doc(db, "warrior_users", user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+
+            if (userDocSnap.exists()) {
+                const cloudData = userDocSnap.data();
+                // If cloud contains data and local is clean/older, inherit cloud records
+                if ((cloudData.historyLogs && cloudData.historyLogs.length >= (state.historyLogs ? state.historyLogs.length : 0))) {
+                    state = cloudData;
+                    localStorage.setItem("warrior_chrono_state", JSON.stringify(state));
+                }
+            } else {
+                // First-time setup: migrate local cache records up to firestore securely
+                await setDoc(userDocRef, state);
+                alert("Welcome! Your previous focus history was seamlessly uploaded to your secure cloud tracker profile.");
+            }
+        } else {
+            currentUser = null;
+            authBtn.textContent = "🔑 Sign In";
+            authBtn.style.background = "rgba(255, 255, 255, 0.08)";
+            authBtn.style.borderColor = "rgba(255,255,255,0.1)";
+        }
+        updateUIDisplay();
+    });
+
+    // 9. Formatting Helper Engines
     function formatTargetHoursText(hoursVal) {
         let hrs = Math.floor(hoursVal);
         let mins = Math.round((hoursVal - hrs) * 60);
-        let mmStr = mins.toString().padStart(2, '0');
-        return `${hrs}h ${mmStr}m`;
+        return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
     }
 
     function formatProgressElapsedText(ticks) {
         let totalMinutes = Math.floor(ticks / 60000);
-        if (totalMinutes < 60) {
-            return `${totalMinutes}m`;
-        }
+        if (totalMinutes < 60) return `${totalMinutes}m`;
         let hrs = Math.floor(totalMinutes / 60);
         let mins = totalMinutes % 60;
         return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
@@ -779,12 +864,7 @@
         let hours = Math.floor(ticks / 3600000);
         let minutes = Math.floor((ticks % 3600000) / 60000);
         let seconds = Math.floor((ticks % 60000) / 1000);
-
-        let hh = hours.toString().padStart(2, '0');
-        let mm = minutes.toString().padStart(2, '0');
-        let ss = seconds.toString().padStart(2, '0');
-
-        return `${hh}:${mm}:${ss}`;
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
     function computeCurrentSessionDuration() {
@@ -795,10 +875,7 @@
     function parseDurationStringToMs(timeString) {
         try {
             let parts = timeString.split(':');
-            let hrs = parseInt(parts[0], 10);
-            let mins = parseInt(parts[1], 10);
-            let secs = parseInt(parts[2], 10);
-            return (hrs * 3600000) + (mins * 60000) + (secs * 1000);
+            return (parseInt(parts[0], 10) * 3600000) + (parseInt(parts[1], 10) * 60000) + (parseInt(parts[2], 10) * 1000);
         } catch(e) {
             return 0;
         }
@@ -807,32 +884,23 @@
     function getTrackerTimelineMetrics() {
         let now = new Date();
         let targetNow = new Date(now.getTime());
-        if (now.getHours() < 4) {
-            targetNow.setDate(targetNow.getDate() - 1);
-        }
+        if (now.getHours() < 4) targetNow.setDate(targetNow.getDate() - 1);
         targetNow.setHours(4, 0, 0, 0);
 
-        let diffStart = targetNow.getTime() - START_DATE.getTime();
-        let currentDayNum = Math.floor(diffStart / (1000 * 60 * 60 * 24)) + 1;
-
-        let diffTarget = TARGET_DATE.getTime() - targetNow.getTime();
-        let daysRemaining = Math.ceil(diffTarget / (1000 * 60 * 60 * 24));
+        let currentDayNum = Math.floor((targetNow.getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        let daysRemaining = Math.ceil((TARGET_DATE.getTime() - targetNow.getTime()) / (1000 * 60 * 60 * 24));
         if (daysRemaining < 0) daysRemaining = 0;
 
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-        let dateStr = months[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear();
-
-        return { currentDayNum, daysRemaining, dateStr };
+        return { currentDayNum, daysRemaining, dateStr: `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}` };
     }
 
+    // 10. Analytics Grid Refresh Engine
     function updateAnalyticsPanel() {
         let logs = state.historyLogs || [];
         let now = new Date();
-        
         let currentAnchor = new Date(now.getTime());
-        if (now.getHours() < 4) {
-            currentAnchor.setDate(currentAnchor.getDate() - 1);
-        }
+        if (now.getHours() < 4) currentAnchor.setDate(currentAnchor.getDate() - 1);
 
         let liveMs = computeCurrentSessionDuration();
         let maxMs = 0;
@@ -840,10 +908,7 @@
         
         logs.forEach(log => {
             let logMs = parseDurationStringToMs(log.durationText);
-            if (logMs > maxMs) {
-                maxMs = logMs;
-                peakDayStr = `Day ${log.day}`;
-            }
+            if (logMs > maxMs) { maxMs = logMs; peakDayStr = `Day ${log.day}`; }
         });
         
         if (liveMs > maxMs) {
@@ -863,8 +928,7 @@
         function getStartOfWeek(dateObj) {
             let d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
             let day = d.getDay();
-            let diff = d.getDate() - day + (day === 0 ? -6 : 1); 
-            return new Date(d.setDate(diff));
+            return new Date(d.setDate(d.getDate() - day + (day === 0 ? -6 : 1)));
         }
 
         let startOfCurrentWeek = getStartOfWeek(currentAnchor);
@@ -879,12 +943,8 @@
         logs.forEach(log => {
             let logDate = extractLogDate(log);
             let logMs = parseDurationStringToMs(log.durationText);
-            
-            if (logDate >= startOfCurrentWeek) {
-                currentWeekMs += logMs;
-            } else if (logDate >= startOfLastWeek && logDate <= endOfLastWeek) {
-                lastWeekMs += logMs;
-            }
+            if (logDate >= startOfCurrentWeek) currentWeekMs += logMs;
+            else if (logDate >= startOfLastWeek && logDate <= endOfLastWeek) lastWeekMs += logMs;
         });
 
         weeklyDisplay.textContent = formatAnalyticsTime(currentWeekMs);
@@ -892,13 +952,8 @@
 
         let currentMonthIdx = currentAnchor.getMonth();
         let currentYearVal = currentAnchor.getFullYear();
-
-        let lastMonthIdx = currentMonthIdx - 1;
-        let lastMonthYearVal = currentYearVal;
-        if (lastMonthIdx < 0) {
-            lastMonthIdx = 11;
-            lastMonthYearVal--;
-        }
+        let lastMonthIdx = currentMonthIdx === 0 ? 11 : currentMonthIdx - 1;
+        let lastMonthYearVal = currentMonthIdx === 0 ? currentYearVal - 1 : currentYearVal;
 
         let currentMonthMs = liveMs;
         let lastMonthMs = 0;
@@ -906,12 +961,8 @@
         logs.forEach(log => {
             let logDate = extractLogDate(log);
             let logMs = parseDurationStringToMs(log.durationText);
-
-            if (logDate.getMonth() === currentMonthIdx && logDate.getFullYear() === currentYearVal) {
-                currentMonthMs += logMs;
-            } else if (logDate.getMonth() === lastMonthIdx && logDate.getFullYear() === lastMonthYearVal) {
-                lastMonthMs += logMs;
-            }
+            if (logDate.getMonth() === currentMonthIdx && logDate.getFullYear() === currentYearVal) currentMonthMs += logMs;
+            else if (logDate.getMonth() === lastMonthIdx && logDate.getFullYear() === lastMonthYearVal) lastMonthMs += logMs;
         });
 
         monthlyDisplay.textContent = formatAnalyticsTime(currentMonthMs);
@@ -919,32 +970,24 @@
     }
 
     function updateTargetButtonsVisibility() {
-        let now = new Date();
-        let currentHour = now.getHours();
-
-        if (currentHour >= 4 && currentHour < 6) {
-            decTargetBtn.style.display = "flex";
-            incTargetBtn.style.display = "flex";
-            resetTargetBtn.style.display = "block";
-        } else {
-            decTargetBtn.style.display = "none";
-            incTargetBtn.style.display = "none";
-            resetTargetBtn.style.display = "none";
-        }
+        let currentHour = new Date().getHours();
+        let displayState = (currentHour >= 4 && currentHour < 6) ? "flex" : "none";
+        decTargetBtn.style.display = displayState;
+        incTargetBtn.style.display = displayState;
+        resetTargetBtn.style.display = displayState === "flex" ? "block" : "none";
     }
 
+    // 11. Core Layout UI Synchronization Engine
     function updateUIDisplay() {
         let totalTimeMs = computeCurrentSessionDuration();
         chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
         
         if (state.targetHours < 5) state.targetHours = 5;
-
         targetHoursValDisplay.textContent = formatTargetHoursText(state.targetHours);
         decTargetBtn.disabled = (state.targetHours <= 5);
 
         let targetMs = state.targetHours * 60 * 60 * 1000;
         let pct = Math.min(100, (totalTimeMs / targetMs) * 100);
-        
         let isTargetAchieved = totalTimeMs >= targetMs;
         
         if (isTargetAchieved && !coinAwardedToday && !state.coinUsedToday) {
@@ -953,7 +996,6 @@
                 state.warriorCoins += 1;
                 coinAwardedToday = true;
                 saveState();
-                
                 successIcon.textContent = "🪙";
                 successTitle.textContent = "Milestone Achieved!";
                 successMessage.textContent = `Epic work! You reached a continuous ${potentialNextStreak}-day streak and earned 1 Warrior Coin!`;
@@ -965,12 +1007,10 @@
         }
 
         streakDisplay.textContent = (isTargetAchieved && !state.coinUsedToday) ? (state.streak + 1) : state.streak;
-        streakSubText.textContent = "Consecutive Goal Hits";
         coinDisplay.textContent = `🪙 Wallet: ${state.warriorCoins} Coin${state.warriorCoins === 1 ? '' : 's'}`;
 
         let progressRequirementMet = pct >= 75.0;
-        let oneWeekInMs = 7 * 24 * 60 * 60 * 1000;
-        let cooldownCleared = (Date.now() - state.lastCoinUsedTimestamp) >= oneWeekInMs;
+        let cooldownCleared = (Date.now() - state.lastCoinUsedTimestamp) >= (7 * 24 * 60 * 60 * 1000);
 
         if (state.coinUsedToday) {
             freezeStreakBtn.disabled = true;
@@ -999,8 +1039,7 @@
             freezeStreakBtn.style.color = "var(--text-primary)";
         }
 
-        let elapsedFormatted = formatProgressElapsedText(totalTimeMs);
-        progressText.textContent = `${elapsedFormatted} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
+        progressText.textContent = `${formatProgressElapsedText(totalTimeMs)} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
         progressBar.style.width = `${pct}%`;
 
         if (state.coinUsedToday) {
@@ -1009,15 +1048,13 @@
         } else if (isTargetAchieved) {
             remainingTargetText.textContent = "Goal Achieved! 🎉";
             remainingTargetText.style.color = "var(--accent-green)";
-            
             if (!popupFiredToday) {
                 popupFiredToday = true;
                 successOverlay.style.display = "flex";
                 setTimeout(() => successOverlay.classList.add("show"), 10);
             }
         } else {
-            let remainingMs = targetMs - totalTimeMs;
-            remainingTargetText.textContent = `Remaining: ${formatProgressElapsedText(remainingMs)}`;
+            remainingTargetText.textContent = `Remaining: ${formatProgressElapsedText(targetMs - totalTimeMs)}`;
             remainingTargetText.style.color = "var(--accent-amber)";
             popupFiredToday = false; 
         }
@@ -1031,18 +1068,14 @@
         updateAnalyticsPanel();
     }
 
+    // 12. Command Interfaces & Action Handling Logic
     freezeStreakBtn.addEventListener("click", () => {
-        let totalTimeMs = computeCurrentSessionDuration();
-        let targetMs = state.targetHours * 60 * 60 * 1000;
-        let pct = (totalTimeMs / targetMs) * 100;
-
-        if (pct < 75.0) {
+        if (((computeCurrentSessionDuration() / (state.targetHours * 3600000)) * 100) < 75.0) {
             alert("Anti-loophole Guardrail: You must achieve at least 75% of your target before you can freeze your streak.");
             return;
         }
-
         if (state.warriorCoins > 0 && !state.coinUsedToday) {
-            if (confirm("Spend 1 Warrior Coin to freeze your current streak? Your configuration will show SAVED inside your archive log, and your streak won't break if you halt your session early.")) {
+            if (confirm("Spend 1 Warrior Coin to freeze your current streak? Your configuration will show SAVED inside your archive log.")) {
                 state.warriorCoins--;
                 state.coinUsedToday = true;
                 saveState();
@@ -1052,23 +1085,15 @@
     });
 
     decTargetBtn.addEventListener("click", () => {
-        if (state.targetHours > 5) {
-            state.targetHours = Math.max(5, state.targetHours - 0.5);
-            saveState();
-            updateUIDisplay();
-        }
+        if (state.targetHours > 5) { state.targetHours = Math.max(5, state.targetHours - 0.5); saveState(); updateUIDisplay(); }
     });
 
     incTargetBtn.addEventListener("click", () => {
-        state.targetHours = Math.min(24, state.targetHours + 0.5);
-        saveState();
-        updateUIDisplay();
+        state.targetHours = Math.min(24, state.targetHours + 0.5); saveState(); updateUIDisplay();
     });
 
     resetTargetBtn.addEventListener("click", () => {
-        state.targetHours = getAutomatedTargetHours();
-        saveState();
-        updateUIDisplay();
+        state.targetHours = getAutomatedTargetHours(); saveState(); updateUIDisplay();
     });
 
     function evaluateTemporalRollover() {
@@ -1076,45 +1101,29 @@
         let lastRollover = new Date(state.lastRolloverTimestamp);
         
         let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 4, 0, 0, 0, 0);
-        if (lastRollover.getHours() < 4) {
-            boundary.setDate(boundary.getDate() - 1);
-        }
+        if (lastRollover.getHours() < 4) boundary.setDate(boundary.getDate() - 1);
 
         let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0, 0);
-        if (now.getHours() < 4) {
-            currentBoundary.setDate(currentBoundary.getDate() - 1);
-        }
+        if (now.getHours() < 4) currentBoundary.setDate(currentBoundary.getDate() - 1);
 
         if (currentBoundary.getTime() > boundary.getTime()) {
             let durationLogged = computeCurrentSessionDuration();
-            let timeString = formatTimeMatrix(durationLogged);
-            
-            let currentTargetMs = state.targetHours * 60 * 60 * 1000;
-            let passedTarget = durationLogged >= currentTargetMs;
-
             let badgeType = "badge-critical";
             let badgeText = "Failed";
-
             let timeline = getTrackerTimelineMetrics();
 
             if (state.coinUsedToday) {
-                badgeType = "badge-saved";
-                badgeText = "SAVED";
-                state.lastCoinUsedTimestamp = Date.now(); 
-            } else if (passedTarget) {
-                state.streak++;
-                badgeType = "badge-elite";
-                badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
+                badgeType = "badge-saved"; badgeText = "SAVED"; state.lastCoinUsedTimestamp = Date.now(); 
+            } else if (durationLogged >= (state.targetHours * 3600000)) {
+                state.streak++; badgeType = "badge-elite"; badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
             } else {
-                state.streak = 0; 
-                badgeType = "badge-critical";
-                badgeText = "Failed";
+                state.streak = 0; badgeType = "badge-critical"; badgeText = "Failed";
             }
 
             state.historyLogs.unshift({
                 day: timeline.currentDayNum - 1, 
                 dateStr: lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                durationText: timeString,
+                durationText: formatTimeMatrix(durationLogged),
                 statusBadgeClass: badgeType,
                 statusText: badgeText,
                 timestamp: lastRollover.getTime()
@@ -1140,7 +1149,6 @@
             vaultCardsContainer.innerHTML = `<div class="void-message">No historical logs archived inside the Performance Vault yet. Tracking resets daily at 4:00 AM.</div>`;
             return;
         }
-
         state.historyLogs.forEach(item => {
             let card = document.createElement("div");
             card.className = "execution-card";
@@ -1165,10 +1173,7 @@
             state.engineActive = true;
             toggleBtn.textContent = "⏸ Stop Block";
             toggleBtn.className = "halt-active";
-            mainLoopInterval = setInterval(() => {
-                evaluateTemporalRollover();
-                updateUIDisplay();
-            }, 250);
+            mainLoopInterval = setInterval(() => { evaluateTemporalRollover(); updateUIDisplay(); }, 250);
         } else {
             state.accumulatedTime += (Date.now() - state.sessionStartTime);
             state.engineActive = false;
@@ -1183,83 +1188,59 @@
     toggleBtn.addEventListener("click", toggleSession);
 
     window.addEventListener("keydown", (e) => {
-        if (e.key === "F1") {
-            e.preventDefault(); 
-            toggleSession();
-        }
+        if (e.key === "F1") { e.preventDefault(); toggleSession(); }
         if (e.key === " " || e.code === "Space") {
             const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : "";
-            if (activeTag !== "input" && activeTag !== "textarea" && activeTag !== "button") {
-                e.preventDefault(); 
-                toggleSession();
-            }
+            if (activeTag !== "input" && activeTag !== "textarea" && activeTag !== "button") { e.preventDefault(); toggleSession(); }
         }
     });
 
     resetEngineBtn.addEventListener("click", () => {
         if (confirm("Are you sure you want to reset the current day's focus time? This cannot be undone.")) {
-            state.accumulatedTime = 0;
-            state.engineActive = false;
-            state.sessionStartTime = 0;
-            popupFiredToday = false; 
-            
+            state.accumulatedTime = 0; state.engineActive = false; state.sessionStartTime = 0; popupFiredToday = false; 
             clearInterval(mainLoopInterval);
-            toggleBtn.textContent = "▶ Start Session";
-            toggleBtn.className = "run-active";
-            
-            saveState();
-            updateUIDisplay();
+            toggleBtn.textContent = "▶ Start Session"; toggleBtn.className = "run-active";
+            saveState(); updateUIDisplay();
         }
     });
 
-    hardResetBtn.addEventListener("click", () => {
-        if (confirm("☢️ SYSTEM HARD RESET WARNING:\n\nThis will completely wipe your streak records, coin configuration levels, and clear the entire Performance Archive Vault permanently.\n\nAre you sure you want to proceed?")) {
+    hardResetBtn.addEventListener("click", async () => {
+        if (confirm("☢️ SYSTEM HARD RESET WARNING:\n\nThis will completely wipe your records and vault entries permanently.\n\nAre you sure?")) {
             clearInterval(mainLoopInterval);
             localStorage.removeItem("warrior_chrono_state");
             state = {};
             initFallbackState();
-            popupFiredToday = false;
-            coinAwardedToday = false;
+            popupFiredToday = false; coinAwardedToday = false;
+            toggleBtn.textContent = "▶ Start Session"; toggleBtn.className = "run-active";
+            vaultDrawer.style.display = "none"; vaultDrawer.classList.remove("active");
             
-            toggleBtn.textContent = "▶ Start Session";
-            toggleBtn.className = "run-active";
-            
-            vaultDrawer.style.display = "none";
-            vaultDrawer.classList.remove("active");
-            
-            updateUIDisplay();
-            renderVaultDrawer();
+            if (currentUser) {
+                await setDoc(doc(db, "warrior_users", currentUser.uid), state);
+            }
+            updateUIDisplay(); renderVaultDrawer();
             alert("System tracking data has been fully re-initialized.");
         }
     });
 
     document.getElementById("openHistoryBtn").addEventListener("click", () => {
-        evaluateTemporalRollover();
-        renderVaultDrawer();
-        vaultDrawer.style.display = "block";
-        setTimeout(() => vaultDrawer.classList.add("active"), 10);
+        evaluateTemporalRollover(); renderVaultDrawer();
+        vaultDrawer.style.display = "block"; setTimeout(() => vaultDrawer.classList.add("active"), 10);
     });
 
     document.getElementById("closeVaultBtn").addEventListener("click", () => {
-        vaultDrawer.classList.remove("active");
-        setTimeout(() => vaultDrawer.style.display = "none", 400);
+        vaultDrawer.classList.remove("active"); setTimeout(() => vaultDrawer.style.display = "none", 400);
     });
 
     closeSuccessBtn.addEventListener("click", () => {
-        successOverlay.classList.remove("show");
-        setTimeout(() => successOverlay.style.display = "none", 400);
+        successOverlay.classList.remove("show"); setTimeout(() => successOverlay.style.display = "none", 400);
     });
 
     evaluateTemporalRollover();
     updateUIDisplay();
 
     if (state.engineActive) {
-        toggleBtn.textContent = "⏸ Stop Block";
-        toggleBtn.className = "halt-active";
-        mainLoopInterval = setInterval(() => {
-            evaluateTemporalRollover();
-            updateUIDisplay();
-        }, 250);
+        toggleBtn.textContent = "⏸ Stop Block"; toggleBtn.className = "halt-active";
+        mainLoopInterval = setInterval(() => { evaluateTemporalRollover(); updateUIDisplay(); }, 250);
     }
 </script>
 </body>
