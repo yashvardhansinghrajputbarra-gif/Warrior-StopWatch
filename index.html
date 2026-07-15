@@ -9,23 +9,22 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230071e3%22 opacity=%220.15%22/><circle cx=%2250%22 cy=%2250%22 r=%2232%22 fill=%22none%22 stroke=%22%230071e3%22 stroke-width=%224.5%22/><circle cx=%2250%22 cy=%2250%22 r=%2214%22 fill=%22%23ff3b30%22/><path d=%22M50 8 L50 22 M50 78 L50 92 M8 50 L22 50 M78 50 L92 50%22 stroke=%22%23ffffff%22 stroke-width=%225.5%22 stroke-linecap=%22round%22/></svg>">
     <style>
         :root {
-            --apple-glass: rgba(22, 22, 30, 0.45);
-            --apple-glass-hover: rgba(32, 32, 45, 0.55);
-            --apple-border: rgba(255, 255, 255, 0.12);
-            --apple-border-hover: rgba(255, 255, 255, 0.22);
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.65);
-            --text-muted: rgba(255, 255, 255, 0.4);
+            --glass-bg: rgba(20, 24, 33, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.07);
+            --text-main: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.5);
+            --text-pill: rgba(255, 255, 255, 0.35);
             --accent-blue: #0071e3;
             --accent-green: #34c759;
             --accent-red: #ff3b30;
             --accent-amber: #ff9500;
+            --accent-gold: #ffd700;
         }
 
         body {
             margin: 0;
-            background: #0d0f14;
-            color: var(--text-primary);
+            background: #090b0e;
+            color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
             padding: 40px;
             min-height: 100vh;
@@ -38,57 +37,63 @@
         body::before {
             content: "";
             position: fixed;
-            top: -10%;
-            left: -10%;
-            width: 120%;
-            height: 120%;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
             background: 
-                radial-gradient(circle at 20% 30%, #1e2942 0%, transparent 40%),
-                radial-gradient(circle at 80% 20%, #16222f 0%, transparent 45%),
-                radial-gradient(circle at 50% 80%, #111a2e 0%, transparent 50%),
-                radial-gradient(circle at 85% 75%, #25354e 0%, transparent 35%);
+                radial-gradient(circle at 18% 25%, #141c2f 0%, transparent 45%),
+                radial-gradient(circle at 85% 15%, #0f1824 0%, transparent 50%),
+                radial-gradient(circle at 45% 75%, #0a111f 0%, transparent 55%),
+                radial-gradient(circle at 80% 80%, #17243a 0%, transparent 40%);
             z-index: -2;
         }
 
         body::after {
             content: "";
             position: fixed;
-            width: 450px;
-            height: 450px;
-            background: radial-gradient(circle, rgba(100,125,165,0.18) 0%, rgba(0,0,0,0) 70%);
-            top: 20%;
-            right: 10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(100,125,165,0.12) 0%, rgba(0,0,0,0) 70%);
+            top: 25%;
+            right: 5%;
             z-index: -1;
-            filter: blur(40px);
-            animation: fluidFloat 12s ease-in-out infinite alternate;
+            filter: blur(50px);
+            animation: fluidFloat 15s ease-in-out infinite alternate;
         }
 
         @keyframes fluidFloat {
             0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(40px) scale(1.1); }
+            100% { transform: translateY(50px) scale(1.08); }
         }
 
         .glass {
-            background: var(--apple-glass);
-            backdrop-filter: blur(35px) saturate(160%);
-            -webkit-backdrop-filter: blur(35px) saturate(160%);
-            border: 1px solid var(--apple-border);
-            border-radius: 22px;
-            padding: 26px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(30px) saturate(140%);
+            -webkit-backdrop-filter: blur(30px) saturate(140%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 28px;
             position: relative;
             box-sizing: border-box;
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
                         background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
                         border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
                         box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 
+                0 4px 24px -1px rgba(0, 0, 0, 0.3),
+                0 25px 55px -5px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0px rgba(255, 255, 255, 0.1);
         }
         
         .glass:hover {
             transform: translateY(-2px);
-            background: var(--apple-glass-hover);
-            border-color: var(--apple-border-hover);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+            background: rgba(28, 33, 46, 0.75);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 10px 35px -1px rgba(0, 0, 0, 0.35),
+                0 30px 65px -5px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0px rgba(255, 255, 255, 0.15);
         }
 
         .grid {
@@ -120,41 +125,34 @@
 
         h1 { 
             margin: 0; 
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 700; 
             letter-spacing: -0.5px; 
-            color: var(--text-primary);
+            color: var(--text-main);
             display: flex;
             align-items: center;
             gap: 12px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
         }
 
         h2.vault-title { 
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700; 
             letter-spacing: -0.5px;
-            color: var(--text-primary);
+            color: var(--text-main);
             margin: 0;
+            text-transform: uppercase;
         }
 
         h3 {
             margin-top: 0;
             margin-bottom: 16px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            letter-spacing: -0.1px;
-            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            color: var(--text-dim);
             text-transform: uppercase;
         }
-
-        .target-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 0;
-            margin-bottom: 16px;
-        }
-        .target-header h3 { margin: 0; }
 
         .timeline-header {
             display: flex;
@@ -163,76 +161,30 @@
             margin-bottom: 16px;
         }
         .timeline-header h3 { margin: 0; }
+        
         .live-badge {
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.5px;
             background: rgba(255, 255, 255, 0.08);
-            color: var(--text-secondary);
+            color: var(--text-dim);
             padding: 3px 10px;
             border-radius: 99px;
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
-        .stepper-container {
-            display: flex;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 4px;
-            justify-content: space-between;
-            box-sizing: border-box;
-            height: 42px;
-        }
-        .stepper-container:focus-within {
-            border-color: var(--accent-blue);
-            background: rgba(0, 0, 0, 0.35);
-        }
-        .stepper-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 34px;
-            height: 34px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            padding: 0;
-            transition: background 0.2s ease;
-        }
-        .stepper-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .stepper-btn:disabled {
-            color: var(--text-muted);
-            cursor: not-allowed;
-            background: transparent;
-        }
-        .stepper-value {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--text-primary);
-            user-select: none;
-            width: 100%;
-            text-align: center;
-        }
-
         .progress-container {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: 99px;
             height: 6px;
             width: 100%;
             margin-top: 12px;
             overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
         
         .progress-bar {
-            background: linear-gradient(90deg, #0071e3, #34c759);
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
             height: 100%;
             width: 0%;
             transition: width 0.3s ease;
@@ -240,12 +192,17 @@
         }
 
         .num {
-            font-size: 46px;
+            font-size: 38px;
             font-weight: 700;
             letter-spacing: -1px;
-            color: var(--text-primary);
+            color: var(--text-main);
             margin-bottom: 12px;
             white-space: nowrap;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .mono-num {
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
         }
 
         .timeline-body-wrapper {
@@ -258,33 +215,34 @@
         .days-left-notation {
             font-size: 13px;
             font-weight: 500;
-            color: var(--text-secondary);
+            color: var(--text-dim);
         }
 
         .sub-metric {
             margin-top: 2px;
             margin-bottom: 0;
             font-size: 12px;
-            opacity: 0.5;
+            color: var(--text-pill);
         }
 
         .chrono-engine-container {
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-            font-size: 68px;
+            font-size: 72px;
             font-weight: 700;
             letter-spacing: -2px;
-            color: var(--text-primary);
-            margin: 24px 0;
+            color: var(--text-main);
+            margin: 28px 0;
             display: flex;
             justify-content: center;
             align-items: center;
+            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
         }
 
         .controls-cluster {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             max-width: 400px;
             margin: 0 auto;
         }
@@ -297,108 +255,136 @@
         }
 
         button {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 99px;
-            padding: 10px 22px;
+            padding: 10px 24px;
             cursor: pointer;
             font-size: 13px;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         }
 
         button:hover {
-            background: rgba(255, 255, 255, 0.18); 
-            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.14); 
+            border-color: rgba(255, 255, 255, 0.18);
         }
 
         button:active { transform: scale(0.96); }
 
         button.run-active { background: var(--accent-blue); border: none; }
-        button.run-active:hover { background: #0077ed; }
+        button.run-active:hover { background: #007bf3; }
         
-        button.halt-active { background: rgba(255, 59, 48, 0.15); border-color: rgba(255, 59, 48, 0.2); color: #ff453a; }
-        button.halt-active:hover { background: rgba(255, 59, 48, 0.25); border-color: rgba(255, 59, 48, 0.3); }
+        button.halt-active { background: rgba(255, 59, 48, 0.15); border-color: rgba(255, 59, 48, 0.25); color: #ff453a; }
+        button.halt-active:hover { background: rgba(255, 59, 48, 0.25); border-color: rgba(255, 59, 48, 0.35); }
 
         button.reset-engine-btn {
             background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.15);
-            color: var(--text-muted);
+            border: 1px dashed rgba(255, 255, 255, 0.12);
+            color: var(--text-dim);
             font-size: 11px;
             font-weight: 500;
             padding: 6px 16px;
             border-radius: 99px;
             transition: all 0.2s ease;
+            box-shadow: none;
         }
         button.reset-engine-btn:hover {
-            background: rgba(255, 59, 48, 0.1);
-            border-color: rgba(255, 59, 48, 0.3);
+            background: rgba(255, 59, 48, 0.08);
+            border-color: rgba(255, 59, 48, 0.25);
             color: #ff453a;
-        }
-
-        button.reset-btn {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 4px 12px;
-            font-size: 11px;
-            border-radius: 99px;
-            margin: 0;
-        }
-        button.reset-btn:hover {
-            background: rgba(255, 59, 48, 0.15);
-            border-color: rgba(255, 59, 48, 0.2);
-            color: #ff3b30;
-        }
-
-        button.hard-reset-btn {
-            background: rgba(255, 59, 48, 0.1);
-            color: #ff453a;
-            border: 1px solid rgba(255, 59, 48, 0.25);
-            padding: 8px 18px;
-            font-size: 13px;
-            font-weight: 600;
-            border-radius: 99px;
-        }
-        button.hard-reset-btn:hover {
-            background: rgba(255, 59, 48, 0.25);
-            border-color: rgba(255, 59, 48, 0.4);
         }
 
         button.auth-trigger-btn {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
         }
         button.auth-trigger-btn:hover {
-            background: rgba(255, 255, 255, 0.14);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.18);
         }
 
         .history-trigger {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.09);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             color: #fff;
-            padding: 10px 18px;
+            padding: 10px 20px;
             border-radius: 99px;
             font-size: 13px;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
-            font-weight: 500;
+            font-weight: 600;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .history-trigger:hover {
-            background: rgba(255, 255, 255, 0.16);
-            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.22);
             transform: translateY(-1px);
         }
 
+        /* Pill Card Design Elements */
+        .rank-badge-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 99px;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .pill-silver {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+        .pill-green {
+            background: rgba(52, 199, 89, 0.12);
+            color: #34c759;
+            box-shadow: 0 0 20px rgba(52, 199, 89, 0.15);
+            border-color: rgba(52, 199, 89, 0.3);
+        }
+        .pill-red {
+            background: rgba(255, 59, 48, 0.15);
+            color: #ff3b30;
+            box-shadow: 0 0 25px rgba(255, 59, 48, 0.25);
+            border-color: rgba(255, 59, 48, 0.4);
+        }
+        .pill-gold {
+            background: rgba(255, 215, 0, 0.15);
+            color: #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.35);
+            border-color: rgba(255, 215, 0, 0.55);
+        }
+
+        .dark-pill-wrapper {
+            background: rgba(10, 12, 17, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 10px 14px;
+            font-size: 12px;
+            color: var(--text-dim);
+            font-family: ui-monospace, SFMono-Regular, monospace;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Drawer Overlay */
         .drawer-backdrop { 
             display: none; 
             position: fixed; 
@@ -406,7 +392,7 @@
             left: 0; 
             width: 100%; 
             height: 100%; 
-            background: rgba(0,0,0,0.3); 
+            background: rgba(0,0,0,0.45); 
             backdrop-filter: blur(0px); 
             -webkit-backdrop-filter: blur(0px); 
             z-index: 2000;
@@ -424,9 +410,9 @@
             width: 85%; 
             max-width: 1050px; 
             height: 100%; 
-            background: rgba(20, 20, 25, 0.85); 
-            box-shadow: -20px 0 50px rgba(0,0,0,0.4); 
-            border-left: 1px solid rgba(255,255,255,0.08);
+            background: rgba(13, 16, 23, 0.88); 
+            box-shadow: -20px 0 60px rgba(0,0,0,0.6); 
+            border-left: 1px solid rgba(255,255,255,0.06);
             z-index: 2001; 
             transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
             overflow-y: auto; 
@@ -436,39 +422,63 @@
         .drawer-backdrop.active .drawer-content { right: 0; }
         
         .vault-container { display: flex; flex-direction: column; gap: 24px; width: 100%; }
-        .glass-panel { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 22px; padding: 26px; box-sizing: border-box; }
-        .header-layout { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 18px; margin-bottom: 22px; gap: 16px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 22px; padding: 26px; box-sizing: border-box; }
+        .header-layout { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 18px; margin-bottom: 22px; gap: 16px; }
         .header-left-group { display: flex; align-items: center; gap: 18px; }
-        .back-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.05); color: #fff; padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0; }
-        .back-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateX(-2px); }
+        .back-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.05); color: #fff; padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0; }
+        .back-btn:hover { background: rgba(255, 255, 255, 0.12); transform: translateX(-2px); }
         .cards-list-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         
-        .execution-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 18px; padding: 18px; position: relative; transition: all 0.25s ease; }
-        .execution-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12); transform: translateY(-2px); }
+        .execution-card { background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 18px; padding: 18px; position: relative; transition: all 0.25s ease; }
+        .execution-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
         .card-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card-date { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
+        .card-date { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
         
-        .status-badge { font-size: 9px; font-weight: 600; padding: 3px 8px; border-radius: 99px; letter-spacing: 0.3px; }
-        .badge-elite { background: rgba(52, 199, 89, 0.15); color: #34c759; }
-        .badge-critical { background: rgba(255, 59, 48, 0.15); color: #ff3b30; }
-        .badge-amber { background: rgba(255, 149, 0, 0.15); color: #ff9500; }
-        .badge-saved { background: rgba(142, 142, 147, 0.2); color: #aeaeb2; }
+        .vault-pill-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px currentColor;
+        }
 
         .card-metrics-block {
-            background: rgba(0, 0, 0, 0.15); padding: 12px; border-radius: 10px; text-align: center;
+            background: rgba(0, 0, 0, 0.25); padding: 12px; border-radius: 10px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.02);
         }
-        .card-metrics-block .val { font-size: 20px; font-weight: 700; color: #fff; }
-        .card-metrics-block .label { font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
+        .card-metrics-block .val { font-size: 22px; font-weight: 700; color: #fff; font-family: ui-monospace, SFMono-Regular, monospace; }
+        .card-metrics-block .label { font-size: 9px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-top: 2px; }
 
-        .void-message { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 0; letter-spacing: 0.2px; width: 100%; grid-column: span 3; }
+        .void-message { text-align: center; color: var(--text-dim); font-size: 13px; padding: 40px 0; letter-spacing: 0.2px; width: 100%; grid-column: span 3; }
 
+        /* Minimalistic Aggregate Micro Metrics */
+        .aggregate-sublabel {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            padding-top: 8px;
+        }
+        .aggregate-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-family: ui-monospace, monospace;
+            color: var(--text-dim);
+        }
+        .aggregate-row .agg-val {
+            color: rgba(255,255,255,0.85);
+            font-weight: 600;
+        }
+
+        /* Success Overlay Screen blur */
         .success-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             z-index: 3000;
@@ -482,8 +492,8 @@
             opacity: 1;
         }
         .success-popup {
-            background: var(--apple-glass);
-            border: 1px solid rgba(52, 199, 89, 0.3);
+            background: var(--glass-bg);
+            border: 1px solid rgba(255, 215, 0, 0.3);
             border-radius: 28px;
             padding: 40px;
             text-align: center;
@@ -500,7 +510,7 @@
             font-size: 64px;
             margin-bottom: 18px;
             display: inline-block;
-            filter: drop-shadow(0 4px 10px rgba(255,215,0,0.3));
+            filter: drop-shadow(0 4px 10px rgba(255,215,0,0.4));
             animation: popScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
         @keyframes popScale {
@@ -522,31 +532,6 @@
         .dismiss-btn:hover {
             background: rgba(255, 255, 255, 0.15);
             border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .freeze-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            width: 100%;
-            margin-top: 14px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .freeze-btn:hover:not(:disabled) {
-            background: rgba(255, 149, 0, 0.15);
-            border-color: rgba(255, 149, 0, 0.3);
-            color: #ff9500;
-        }
-        .freeze-btn:disabled {
-            background: rgba(255, 255, 255, 0.02);
-            border-color: rgba(255, 255, 255, 0.05);
-            color: var(--text-muted);
-            cursor: not-allowed;
         }
 
         @media (max-width: 1400px) { .grid { grid-template-columns: repeat(2, 1fr); } }
@@ -579,30 +564,29 @@
     </div>
 
     <div class="glass">
-        <div class="target-header">
-            <h3>⏱️ Hour Target</h3>
-            <button class="reset-btn" id="resetTargetBtn">Default</button>
+        <div class="timeline-header">
+            <h3>🏆 Record Breaker</h3>
         </div>
+        <div class="num mono-num" id="recordValueDisplay">0h 00m</div>
+        <div class="dark-pill-wrapper" id="recordAchievedDateDisplay">Achieved on: N/A</div>
         
-        <div class="stepper-container">
-            <button class="stepper-btn" id="decTargetBtn">−</button>
-            <span class="stepper-value" id="targetHoursValDisplay">8h 30m</span>
-            <button class="stepper-btn" id="incTargetBtn">+</button>
-        </div>
-
-        <p id="progressText" style="margin-top: 14px; margin-bottom: 0; font-size: 12px; color: var(--text-secondary);">0m / 8h 30m (0%)</p>
+        <p id="recordDeltaText" style="margin-top: 14px; margin-bottom: 0; font-size: 11px; font-weight: 600; color: var(--accent-amber); text-transform: uppercase; letter-spacing: 0.2px;">Remaining: 0m</p>
         <div class="progress-container">
-            <div id="progressBar" class="progress-bar"></div>
+            <div id="recordProgressBar" class="progress-bar"></div>
         </div>
-        <p id="remainingTargetText" style="margin-top: 8px; margin-bottom: 0; font-size: 11px; color: var(--accent-amber); font-weight: 500;">Remaining: 8h 30m</p>
     </div>
 
     <div class="glass">
-        <h3>🔥 Current Streak</h3>
-        <div class="num" id="streakDisplay">0</div>
-        <p class="sub-metric" id="streakSubText">Consecutive Goal Hits</p>
-        <p class="sub-metric" id="coinDisplay" style="margin-top: 6px; font-weight: 600; opacity: 0.85; color: #ffd700;">🪙 Wallet: 0 Coins</p>
-        <button class="freeze-btn" id="freezeStreakBtn">🛡️ Freeze Streak (Uses 1 Coin)</button>
+        <div class="timeline-header">
+            <h3>🛡️ FOCUS RANK</h3>
+        </div>
+        <div style="margin-top: 10px; margin-bottom: 12px;">
+            <div class="rank-badge-pill pill-silver" id="rankPillDisplay">⚪ WARMUP</div>
+        </div>
+        <div class="dark-pill-wrapper" id="rankDescriptionText" style="font-size: 11px; line-height: 1.4;">
+            Initiate focus to begin climbing. Keep going!
+        </div>
+        <p class="sub-metric" id="currentSessionRawDisplay" style="margin-top: 10px; text-align: center; font-weight: 500;">Current Session: 0m</p>
     </div>
 </div>
 
@@ -614,7 +598,7 @@
         <div class="action-row">
             <button id="toggleBtn" class="run-active">▶ Start Session</button>
         </div>
-        <button id="resetEngineBtn" class="reset-engine-btn">🔄 Reset Current Day Session</button>
+        <button id="resetEngineBtn" class="reset-engine-btn">🔄 Reset Today's Session</button>
     </div>
 </div>
 
@@ -625,26 +609,56 @@
                 <div class="header-layout">
                     <div class="header-left-group">
                         <button class="back-btn" id="closeVaultBtn">← Tracker</button>
-                        <h2 class="vault-title">🛡️ PERFORMANCE ARCHIVE VAULT</h2>
+                        <h2 class="vault-title">🛡️ Performance Archive Vault</h2>
                     </div>
-                    <button class="hard-reset-btn" id="hardResetBtn">☢️ Hard Reset System</button>
                 </div>
 
                 <div class="analytics-grid" style="margin-top: 22px;">
-                    <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
+                    <div class="glass" style="background: rgba(255,255,255,0.015); padding: 18px;">
                         <h3 style="font-size: 11px; margin-bottom: 8px;">👑 Peak Session</h3>
-                        <div class="num" id="peakDisplay" style="font-size: 28px; margin-bottom: 4px;">0h 00m</div>
+                        <div class="num mono-num" id="peakDisplay" style="font-size: 24px; margin-bottom: 4px;">0h 00m</div>
                         <p class="sub-metric" id="peakSubText" style="font-size: 11px;">Highest Focus Record</p>
+                        
+                        <div class="aggregate-sublabel">
+                            <div class="aggregate-row">
+                                <span>Lifetime Focus:</span>
+                                <span class="agg-val" id="lifetimeFocusDisplay">0h 00m</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
+                    
+                    <div class="glass" style="background: rgba(255,255,255,0.015); padding: 18px;">
                         <h3 style="font-size: 11px; margin-bottom: 8px;">📊 Weekly Aggregate</h3>
-                        <div class="num" id="weeklyDisplay" style="font-size: 28px; margin-bottom: 4px;">0h 00m</div>
-                        <p class="sub-metric" id="weeklySubText" style="font-size: 11px;">Current vs Last Week</p>
+                        <div class="num mono-num" id="weeklyDisplay" style="font-size: 24px; margin-bottom: 4px;">0h 00m</div>
+                        <p class="sub-metric" id="weeklySubText" style="font-size: 11px;">Current Week Focus</p>
+                        
+                        <div class="aggregate-sublabel">
+                            <div class="aggregate-row">
+                                <span>W-1 (Last Week):</span>
+                                <span class="agg-val" id="lastWeekDisplay">0h 00m</span>
+                            </div>
+                            <div class="aggregate-row">
+                                <span>W-2 (Prev Week):</span>
+                                <span class="agg-val" id="prevWeek2Display">0h 00m</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="glass" style="background: rgba(255,255,255,0.02); padding: 18px;">
+                    
+                    <div class="glass" style="background: rgba(255,255,255,0.015); padding: 18px;">
                         <h3 style="font-size: 11px; margin-bottom: 8px;">📈 Monthly Aggregate</h3>
-                        <div class="num" id="monthlyDisplay" style="font-size: 28px; margin-bottom: 4px;">0h 00m</div>
-                        <p class="sub-metric" id="monthlySubText" style="font-size: 11px;">Current vs Last Month</p>
+                        <div class="num mono-num" id="monthlyDisplay" style="font-size: 24px; margin-bottom: 4px;">0h 00m</div>
+                        <p class="sub-metric" id="monthlySubText" style="font-size: 11px;">Current Month Focus</p>
+                        
+                        <div class="aggregate-sublabel">
+                            <div class="aggregate-row">
+                                <span>M-1 (Last Month):</span>
+                                <span class="agg-val" id="lastMonthDisplay">0h 00m</span>
+                            </div>
+                            <div class="aggregate-row">
+                                <span>M-2 (Prev Month):</span>
+                                <span class="agg-val" id="prevMonth2Display">0h 00m</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -656,10 +670,10 @@
 
 <div id="successOverlay" class="success-overlay">
     <div class="success-popup">
-        <div class="success-icon" id="successIcon">🏆</div>
-        <h2 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;" id="successTitle">Target Achieved!</h2>
-        <p style="margin: 0 0 28px 0; font-size: 14px; color: var(--text-secondary); line-height: 1.5;" id="successMessage">
-            You have successfully crushed your focus goal for today. Keep defending the streak, warrior.
+        <div class="success-icon" id="successIcon">🏅</div>
+        <h2 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;" id="successTitle">New Record Set!</h2>
+        <p style="margin: 0 0 28px 0; font-size: 14px; color: var(--text-dim); line-height: 1.5;" id="successMessage">
+            You have successfully crushed your all-time highest focus record! You are officially a legend.
         </p>
         <button class="dismiss-btn" id="closeSuccessBtn">Dismiss</button>
     </div>
@@ -684,59 +698,47 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    const START_DATE = new Date(2026, 2, 14, 4, 0, 0); 
-    const TARGET_DATE = new Date(2027, 4, 2, 4, 0, 0);  
+    // Timelines defined
+    const START_DATE = new Date(2026, 2, 14, 0, 1, 0); 
+    const TARGET_DATE = new Date(2027, 4, 2, 0, 1, 0);  
 
     let state = JSON.parse(localStorage.getItem("warrior_chrono_state") || "{}");
     let currentUser = null;
     let popupFiredToday = false;
-    let coinAwardedToday = false;
     let mainLoopInterval = null;
 
-    function getAutomatedTargetHours() {
-        let now = new Date();
-        let targetNow = new Date(now.getTime());
-        if (now.getHours() < 4) {
-            targetNow.setDate(targetNow.getDate() - 1);
-        }
-        if (targetNow.getDay() === 0) {
-            const year = targetNow.getFullYear();
-            const month = targetNow.getMonth();
-            const date = targetNow.getDate();
-
-            if (year === 2026) {
-                if (month === 3 && (date === 26)) return 5.0;
-                if (month === 4 && (date === 10 || date === 24)) return 5.0;
-                if (month === 5 && (date === 7 || date === 21)) return 5.0;
-                if (month === 6 && (date === 5 || date === 19)) return 5.0;
-                if (month === 7 && (date === 2 || date === 23)) return 5.0;
-                if (month === 8 && (date === 6 || date === 20)) return 5.0;
-                if (month === 9 && (date === 4 || date === 18)) return 5.0;
-                if (month === 10 && (date === 1 || date === 22)) return 5.0;
-                if (month === 11 && (date === 13 || date === 27)) return 5.0;
-            } 
-            else if (year === 2027) {
-                if (month === 0 && (date === 3 || date === 10 || date === 17 || date === 24 || date === 31)) return 5.0;
-                if (month === 1 && (date === 7)) return 5.0;
-                if (month === 2 && (date === 28)) return 5.0;
-                if (month === 3 && (date === 4 || date === 11 || date === 18 || date === 25)) return 5.0;
-            }
-            return 11.5;
-        }
-        return 8.5;
-    }
-
+    // Safety migrations for old versions of State values (Seamless Compatibility)
     function initFallbackState() {
-        if (state.streak === undefined) state.streak = 3; 
         if (state.accumulatedTime === undefined) state.accumulatedTime = 0;
         if (state.engineActive === undefined) state.engineActive = false;
         if (state.sessionStartTime === undefined) state.sessionStartTime = 0;
         if (state.historyLogs === undefined) state.historyLogs = [];
-        if (state.targetHours === undefined) state.targetHours = getAutomatedTargetHours(); 
         if (state.lastRolloverTimestamp === undefined) state.lastRolloverTimestamp = Date.now();
-        if (state.warriorCoins === undefined) state.warriorCoins = 0;
-        if (state.coinUsedToday === undefined) state.coinUsedToday = false;
-        if (state.lastCoinUsedTimestamp === undefined) state.lastCoinUsedTimestamp = 0;
+        
+        // Dynamic Peak Record calculations
+        if (state.highestRecordMs === undefined) {
+            // Check logs auto-scanned from legacy histories
+            let scanMax = 0;
+            let scanDate = "N/A";
+            if (state.historyLogs && state.historyLogs.length > 0) {
+                state.historyLogs.forEach(log => {
+                    let logMs = parseDurationStringToMs(log.durationText);
+                    if (logMs > scanMax) {
+                        scanMax = logMs;
+                        scanDate = log.dateStr;
+                    }
+                });
+            }
+            state.highestRecordMs = scanMax > 0 ? scanMax : 0;
+            state.highestRecordDate = scanDate;
+        }
+
+        // Wipe obsolete variables gracefully
+        delete state.streak;
+        delete state.targetHours;
+        delete state.warriorCoins;
+        delete state.coinUsedToday;
+        delete state.lastCoinUsedTimestamp;
     }
     initFallbackState();
 
@@ -744,20 +746,16 @@
         const chronoDisplay = document.getElementById("chronoDisplay");
         const toggleBtn = document.getElementById("toggleBtn");
         const resetEngineBtn = document.getElementById("resetEngineBtn");
-        const streakDisplay = document.getElementById("streakDisplay");
-        const streakSubText = document.getElementById("streakSubText");
-        const coinDisplay = document.getElementById("coinDisplay");
-        const freezeStreakBtn = document.getElementById("freezeStreakBtn");
         const vaultDrawer = document.getElementById("vaultDrawer");
         const vaultCardsContainer = document.getElementById("vaultCardsContainer");
-        const targetHoursValDisplay = document.getElementById("targetHoursValDisplay");
-        const decTargetBtn = document.getElementById("decTargetBtn");
-        const incTargetBtn = document.getElementById("incTargetBtn");
-        const progressText = document.getElementById("progressText");
-        const progressBar = document.getElementById("progressBar");
-        const resetTargetBtn = document.getElementById("resetTargetBtn");
-        const hardResetBtn = document.getElementById("hardResetBtn");
-        const remainingTargetText = document.getElementById("remainingTargetText");
+        const recordValueDisplay = document.getElementById("recordValueDisplay");
+        const recordAchievedDateDisplay = document.getElementById("recordAchievedDateDisplay");
+        const recordDeltaText = document.getElementById("recordDeltaText");
+        const recordProgressBar = document.getElementById("recordProgressBar");
+        const rankPillDisplay = document.getElementById("rankPillDisplay");
+        const rankDescriptionText = document.getElementById("rankDescriptionText");
+        const currentSessionRawDisplay = document.getElementById("currentSessionRawDisplay");
+        
         const successOverlay = document.getElementById("successOverlay");
         const closeSuccessBtn = document.getElementById("closeSuccessBtn");
         const successIcon = document.getElementById("successIcon");
@@ -766,12 +764,19 @@
         const timelineDayDisplay = document.getElementById("timelineDayDisplay");
         const timelineRemainingDisplay = document.getElementById("timelineRemainingDisplay");
         const timelineDateDisplay = document.getElementById("timelineDateDisplay");
+        
         const peakDisplay = document.getElementById("peakDisplay");
         const peakSubText = document.getElementById("peakSubText");
+        const lifetimeFocusDisplay = document.getElementById("lifetimeFocusDisplay");
+        
         const weeklyDisplay = document.getElementById("weeklyDisplay");
-        const weeklySubText = document.getElementById("weeklySubText");
+        const lastWeekDisplay = document.getElementById("lastWeekDisplay");
+        const prevWeek2Display = document.getElementById("prevWeek2Display");
+        
         const monthlyDisplay = document.getElementById("monthlyDisplay");
-        const monthlySubText = document.getElementById("monthlySubText");
+        const lastMonthDisplay = document.getElementById("lastMonthDisplay");
+        const prevMonth2Display = document.getElementById("prevMonth2Display");
+        
         const authBtn = document.getElementById("authBtn");
 
         async function saveState() {
@@ -783,12 +788,6 @@
                     console.error("Cloud database synchronization interrupted:", error);
                 }
             }
-        }
-
-        function formatTargetHoursText(hoursVal) {
-            let hrs = Math.floor(hoursVal);
-            let mins = Math.round((hoursVal - hrs) * 60);
-            return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
         }
 
         function formatProgressElapsedText(ticks) {
@@ -819,6 +818,7 @@
         }
 
         function parseDurationStringToMs(timeString) {
+            if (!timeString) return 0;
             try {
                 let parts = timeString.split(':');
                 return (parseInt(parts[0], 10) * 3600000) + (parseInt(parts[1], 10) * 60000) + (parseInt(parts[2], 10) * 1000);
@@ -830,8 +830,7 @@
         function getTrackerTimelineMetrics() {
             let now = new Date();
             let targetNow = new Date(now.getTime());
-            if (now.getHours() < 4) targetNow.setDate(targetNow.getDate() - 1);
-            targetNow.setHours(4, 0, 0, 0);
+            targetNow.setHours(0, 1, 0, 0);
 
             let currentDayNum = Math.floor((targetNow.getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24)) + 1;
             let daysRemaining = Math.ceil((TARGET_DATE.getTime() - targetNow.getTime()) / (1000 * 60 * 60 * 24));
@@ -845,30 +844,27 @@
             let logs = state.historyLogs || [];
             let now = new Date();
             let currentAnchor = new Date(now.getTime());
-            if (now.getHours() < 4) currentAnchor.setDate(currentAnchor.getDate() - 1);
 
             let liveMs = computeCurrentSessionDuration();
-            let maxMs = 0;
-            let peakDayStr = "None";
             
-            logs.forEach(log => {
-                let logMs = parseDurationStringToMs(log.durationText);
-                if (logMs > maxMs) { maxMs = logMs; peakDayStr = `Day ${log.day}`; }
-            });
+            // Peak computation
+            let finalPeakMs = state.highestRecordMs || 0;
+            let peakDateStr = state.highestRecordDate || "N/A";
             
-            if (liveMs > maxMs) {
-                maxMs = liveMs;
-                let currentTimeline = getTrackerTimelineMetrics();
-                peakDayStr = `Day ${currentTimeline.currentDayNum} (Today)`;
-            }
-            
-            peakDisplay.textContent = formatAnalyticsTime(maxMs);
-            peakSubText.textContent = `Achieved on ${peakDayStr}`;
+            peakDisplay.textContent = formatAnalyticsTime(finalPeakMs);
+            peakSubText.textContent = `Achieved on ${peakDateStr}`;
 
             function extractLogDate(logItem) {
                 if(logItem.timestamp) return new Date(logItem.timestamp);
-                return new Date(Date.parse(logItem.dateStr + " " + now.getFullYear()) || Date.now());
+                return new Date(Date.parse(logItem.dateStr) || Date.now());
             }
+
+            // Calculation of cumulative Lifetime focus
+            let lifetimeMs = liveMs;
+            logs.forEach(log => {
+                lifetimeMs += parseDurationStringToMs(log.durationText);
+            });
+            lifetimeFocusDisplay.textContent = formatAnalyticsTime(lifetimeMs);
 
             function getStartOfWeek(dateObj) {
                 let d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
@@ -876,139 +872,137 @@
                 return new Date(d.setDate(d.getDate() - day + (day === 0 ? -6 : 1)));
             }
 
+            // Weekly boundaries logic
             let startOfCurrentWeek = getStartOfWeek(currentAnchor);
-            let startOfLastWeek = new Date(startOfCurrentWeek.getTime());
-            startOfLastWeek.setDate(startOfLastWeek.getDate() - 7);
-            let endOfLastWeek = new Date(startOfCurrentWeek.getTime());
-            endOfLastWeek.setMilliseconds(-1);
+            let startOfLastWeek = new Date(startOfCurrentWeek.getTime() - 7 * 24 * 60 * 60 * 1000);
+            let startOfPrevWeek2 = new Date(startOfCurrentWeek.getTime() - 14 * 24 * 60 * 60 * 1000);
 
             let currentWeekMs = liveMs;
             let lastWeekMs = 0;
+            let prevWeek2Ms = 0;
 
             logs.forEach(log => {
                 let logDate = extractLogDate(log);
                 let logMs = parseDurationStringToMs(log.durationText);
-                if (logDate >= startOfCurrentWeek) currentWeekMs += logMs;
-                else if (logDate >= startOfLastWeek && logDate <= endOfLastWeek) lastWeekMs += logMs;
+                if (logDate >= startOfCurrentWeek) {
+                    currentWeekMs += logMs;
+                } else if (logDate >= startOfLastWeek && logDate < startOfCurrentWeek) {
+                    lastWeekMs += logMs;
+                } else if (logDate >= startOfPrevWeek2 && logDate < startOfLastWeek) {
+                    prevWeek2Ms += logMs;
+                }
             });
 
             weeklyDisplay.textContent = formatAnalyticsTime(currentWeekMs);
-            weeklySubText.textContent = `Prev Week: ${formatAnalyticsTime(lastWeekMs)}`;
+            lastWeekDisplay.textContent = formatAnalyticsTime(lastWeekMs);
+            prevWeek2Display.textContent = formatAnalyticsTime(prevWeek2Ms);
 
+            // Monthly boundaries logic
             let currentMonthIdx = currentAnchor.getMonth();
             let currentYearVal = currentAnchor.getFullYear();
-            let lastMonthIdx = currentMonthIdx === 0 ? 11 : currentMonthIdx - 1;
-            let lastMonthYearVal = currentMonthIdx === 0 ? currentYearVal - 1 : currentYearVal;
+
+            let lastMonthDate = new Date(currentYearVal, currentMonthIdx - 1, 1);
+            let prev2MonthDate = new Date(currentYearVal, currentMonthIdx - 2, 1);
 
             let currentMonthMs = liveMs;
             let lastMonthMs = 0;
+            let prev2MonthMs = 0;
 
             logs.forEach(log => {
                 let logDate = extractLogDate(log);
                 let logMs = parseDurationStringToMs(log.durationText);
-                if (logDate.getMonth() === currentMonthIdx && logDate.getFullYear() === currentYearVal) currentMonthMs += logMs;
-                else if (logDate.getMonth() === lastMonthIdx && logDate.getFullYear() === lastMonthYearVal) lastMonthMs += logMs;
+                
+                if (logDate.getMonth() === currentMonthIdx && logDate.getFullYear() === currentYearVal) {
+                    currentMonthMs += logMs;
+                } else if (logDate.getMonth() === lastMonthDate.getMonth() && logDate.getFullYear() === lastMonthDate.getFullYear()) {
+                    lastMonthMs += logMs;
+                } else if (logDate.getMonth() === prev2MonthDate.getMonth() && logDate.getFullYear() === prev2MonthDate.getFullYear()) {
+                    prev2MonthMs += logMs;
+                }
             });
 
             monthlyDisplay.textContent = formatAnalyticsTime(currentMonthMs);
-            monthlySubText.textContent = `Prev Month: ${formatAnalyticsTime(lastMonthMs)}`;
-        }
-
-        function updateTargetButtonsVisibility() {
-            let currentHour = new Date().getHours();
-            let displayState = (currentHour >= 4 && currentHour < 6) ? "flex" : "none";
-            decTargetBtn.style.display = displayState;
-            incTargetBtn.style.display = displayState;
-            resetTargetBtn.style.display = displayState === "flex" ? "block" : "none";
+            lastMonthDisplay.textContent = formatAnalyticsTime(lastMonthMs);
+            prevMonth2Display.textContent = formatAnalyticsTime(prev2MonthMs);
         }
 
         function updateUIDisplay() {
             let totalTimeMs = computeCurrentSessionDuration();
             chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
-            
-            if (state.targetHours < 5) state.targetHours = 5;
-            targetHoursValDisplay.textContent = formatTargetHoursText(state.targetHours);
-            decTargetBtn.disabled = (state.targetHours <= 5);
+            currentSessionRawDisplay.textContent = `Current Session: ${formatProgressElapsedText(totalTimeMs)}`;
 
-            let targetMs = state.targetHours * 60 * 60 * 1000;
-            let pct = Math.min(100, (totalTimeMs / targetMs) * 100);
-            let isTargetAchieved = totalTimeMs >= targetMs;
-            
-            if (isTargetAchieved && !coinAwardedToday && !state.coinUsedToday) {
-                let potentialNextStreak = state.streak + 1;
-                if (potentialNextStreak % 7 === 0) {
-                    state.warriorCoins += 1;
-                    coinAwardedToday = true;
-                    saveState();
-                    successIcon.textContent = "🪙";
-                    successTitle.textContent = "Milestone Achieved!";
-                    successMessage.textContent = `Epic work! You reached a continuous ${potentialNextStreak}-day streak and earned 1 Warrior Coin!`;
-                } else {
-                    successIcon.textContent = "🏆";
-                    successTitle.textContent = "Target Achieved!";
-                    successMessage.textContent = "You have successfully crushed your focus goal for today. Keep defending the streak, warrior.";
-                }
+            // Record breaker card setup
+            let highestRecord = state.highestRecordMs || 0;
+            recordValueDisplay.textContent = formatProgressElapsedText(highestRecord);
+            recordAchievedDateDisplay.textContent = state.highestRecordDate ? `Achieved on: ${state.highestRecordDate}` : "Achieved on: N/A";
+
+            let recordDeltaPct = 0;
+            if (highestRecord > 0) {
+                recordDeltaPct = Math.min(100, (totalTimeMs / highestRecord) * 100);
             }
+            recordProgressBar.style.width = `${recordDeltaPct}%`;
 
-            streakDisplay.textContent = (isTargetAchieved && !state.coinUsedToday) ? (state.streak + 1) : state.streak;
-            coinDisplay.textContent = `🪙 Wallet: ${state.warriorCoins} Coin${state.warriorCoins === 1 ? '' : 's'}`;
+            let hasBrokenRecord = totalTimeMs > highestRecord && highestRecord > 0;
 
-            let progressRequirementMet = pct >= 75.0;
-            let cooldownCleared = (Date.now() - state.lastCoinUsedTimestamp) >= (7 * 24 * 60 * 60 * 1000);
-
-            if (state.coinUsedToday) {
-                freezeStreakBtn.disabled = true;
-                freezeStreakBtn.textContent = "🛡️ Streak Secured for Today";
-                freezeStreakBtn.style.borderColor = "var(--accent-green)";
-                freezeStreakBtn.style.color = "var(--accent-green)";
-            } else if (state.warriorCoins <= 0) {
-                freezeStreakBtn.disabled = true;
-                freezeStreakBtn.textContent = "🛡️ Freeze Locked (0 Coins Available)";
-                freezeStreakBtn.style.borderColor = "rgba(255,255,255,0.05)";
-                freezeStreakBtn.style.color = "var(--text-muted)";
-            } else if (!cooldownCleared) {
-                freezeStreakBtn.disabled = true;
-                freezeStreakBtn.textContent = "🛡️ Cooldown Active (Once per Week)";
-                freezeStreakBtn.style.borderColor = "rgba(255,255,255,0.05)";
-                freezeStreakBtn.style.color = "var(--text-muted)";
-            } else if (!progressRequirementMet) {
-                freezeStreakBtn.disabled = true;
-                freezeStreakBtn.textContent = "🛡️ Locked (Requires 75% Progress)";
-                freezeStreakBtn.style.borderColor = "rgba(255,255,255,0.05)";
-                freezeStreakBtn.style.color = "var(--text-muted)";
-            } else {
-                freezeStreakBtn.disabled = false;
-                freezeStreakBtn.textContent = "🛡️ Freeze Streak (Uses 1 Coin)";
-                freezeStreakBtn.style.borderColor = "rgba(255, 255, 255, 0.1)";
-                freezeStreakBtn.style.color = "var(--text-primary)";
-            }
-
-            progressText.textContent = `${formatProgressElapsedText(totalTimeMs)} / ${formatTargetHoursText(state.targetHours)} (${pct.toFixed(1)}%)`;
-            progressBar.style.width = `${pct}%`;
-
-            if (state.coinUsedToday) {
-                remainingTargetText.textContent = "Streak Secured for Today! 🛡️";
-                remainingTargetText.style.color = "var(--text-secondary)";
-            } else if (isTargetAchieved) {
-                remainingTargetText.textContent = "Goal Achieved! 🎉";
-                remainingTargetText.style.color = "var(--accent-green)";
+            if (hasBrokenRecord) {
+                let surplus = totalTimeMs - highestRecord;
+                recordDeltaText.textContent = `🎉 Record Broken by +${formatProgressElapsedText(surplus)}!`;
+                recordDeltaText.style.color = "var(--accent-green)";
+                
                 if (!popupFiredToday) {
                     popupFiredToday = true;
+                    // Persist new peak
+                    let timeline = getTrackerTimelineMetrics();
+                    state.highestRecordMs = totalTimeMs;
+                    state.highestRecordDate = timeline.dateStr;
+                    saveState();
+                    
+                    successIcon.textContent = "🏅";
+                    successTitle.textContent = "New High Score!";
+                    successMessage.textContent = `Unbelievable achievement! You successfully shattered your focus record of ${formatProgressElapsedText(highestRecord)}. Keep accelerating!`;
                     successOverlay.style.display = "flex";
                     setTimeout(() => successOverlay.classList.add("show"), 10);
                 }
+            } else if (highestRecord === 0) {
+                recordDeltaText.textContent = "Setting up your first record today!";
+                recordDeltaText.style.color = "var(--accent-blue)";
             } else {
-                remainingTargetText.textContent = `Remaining: ${formatProgressElapsedText(targetMs - totalTimeMs)}`;
-                remainingTargetText.style.color = "var(--accent-amber)";
-                popupFiredToday = false; 
+                let gap = highestRecord - totalTimeMs;
+                recordDeltaText.textContent = `⚠️ Need ${formatProgressElapsedText(gap)} to break record`;
+                recordDeltaText.style.color = "var(--accent-amber)";
             }
 
+            // Third Card Shifting Pill engine
+            let rankClass = "pill-silver";
+            let rankText = "⚪ WARMUP";
+            let rankDesc = "You are currently warming up. Maintain concentration to push into deep focus!";
+
+            let totalHrsFloat = totalTimeMs / 3600000;
+
+            if (hasBrokenRecord) {
+                rankClass = "pill-gold";
+                rankText = "🏅 RECORD BREAKER";
+                rankDesc = "Incredible! You are operating past your limits, breaking records live!";
+            } else if (totalHrsFloat >= 10.0) {
+                rankClass = "pill-red";
+                rankText = "🔴 BEAST MODE";
+                rankDesc = "Ultimate elite level achieved! You have crossed 10+ legendary hours today!";
+            } else if (totalHrsFloat >= 2.0) {
+                rankClass = "pill-green";
+                rankText = "🟢 DEEP FOCUS";
+                rankDesc = "Fantastic work! The focus pill has evolved into steady progressive green.";
+            }
+
+            rankPillDisplay.className = `rank-badge-pill ${rankClass}`;
+            rankPillDisplay.textContent = rankText;
+            rankDescriptionText.textContent = rankDesc;
+
+            // Timeline calculations
             let timeline = getTrackerTimelineMetrics();
             timelineDayDisplay.textContent = `Day ${timeline.currentDayNum}`;
             timelineRemainingDisplay.textContent = `(${timeline.daysRemaining} Days Left)`;
             timelineDateDisplay.textContent = timeline.dateStr;
 
-            updateTargetButtonsVisibility();
             updateAnalyticsPanel();
         }
 
@@ -1030,8 +1024,8 @@
             if (user) {
                 currentUser = user;
                 authBtn.textContent = `👤 ${user.displayName.split(' ')[0]}`;
-                authBtn.style.background = "rgba(52, 199, 89, 0.15)";
-                authBtn.style.borderColor = "rgba(52, 199, 89, 0.3)";
+                authBtn.style.background = "rgba(52, 199, 89, 0.12)";
+                authBtn.style.borderColor = "rgba(52, 199, 89, 0.25)";
                 
                 const userDocRef = doc(db, "warrior_users", user.uid);
                 const userDocSnap = await getDoc(userDocRef);
@@ -1049,79 +1043,44 @@
             } else {
                 currentUser = null;
                 authBtn.textContent = "🔑 Sign In";
-                authBtn.style.background = "rgba(255, 255, 255, 0.06)";
-                authBtn.style.borderColor = "rgba(255,255,255,0.1)";
+                authBtn.style.background = "rgba(255, 255, 255, 0.05)";
+                authBtn.style.borderColor = "rgba(255,255,255,0.08)";
             }
             updateUIDisplay();
         });
 
-        freezeStreakBtn.addEventListener("click", () => {
-            if (((computeCurrentSessionDuration() / (state.targetHours * 3600000)) * 100) < 75.0) {
-                alert("Anti-loophole Guardrail: You must achieve at least 75% of your target before you can freeze your streak.");
-                return;
-            }
-            if (state.warriorCoins > 0 && !state.coinUsedToday) {
-                if (confirm("Spend 1 Warrior Coin to freeze your current streak? Your configuration will show SAVED inside your archive log.")) {
-                    state.warriorCoins--;
-                    state.coinUsedToday = true;
-                    saveState();
-                    updateUIDisplay();
-                }
-            }
-        });
-
-        decTargetBtn.addEventListener("click", () => {
-            if (state.targetHours > 5) { state.targetHours = Math.max(5, state.targetHours - 0.5); saveState(); updateUIDisplay(); }
-        });
-
-        incTargetBtn.addEventListener("click", () => {
-            state.targetHours = Math.min(24, state.targetHours + 0.5); saveState(); updateUIDisplay();
-        });
-
-        resetTargetBtn.addEventListener("click", () => {
-            state.targetHours = getAutomatedTargetHours(); saveState(); updateUIDisplay();
-        });
-
+        // 00:01 Midnight Standard Rollover calculation
         function evaluateTemporalRollover() {
             let now = new Date();
             let lastRollover = new Date(state.lastRolloverTimestamp);
             
-            let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 4, 0, 0, 0, 0);
-            if (lastRollover.getHours() < 4) boundary.setDate(boundary.getDate() - 1);
-
-            let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 4, 0, 0, 0, 0);
-            if (now.getHours() < 4) currentBoundary.setDate(currentBoundary.getDate() - 1);
+            // Checking standard transition crossing of midnight (00:01 AM)
+            let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 0, 1, 0, 0);
+            let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 1, 0, 0);
 
             if (currentBoundary.getTime() > boundary.getTime()) {
                 let durationLogged = computeCurrentSessionDuration();
-                let badgeType = "badge-critical";
-                let badgeText = "Survived";
                 let timeline = getTrackerTimelineMetrics();
 
-                if (state.coinUsedToday) {
-                    badgeType = "badge-saved"; badgeText = "SAVED"; state.lastCoinUsedTimestamp = Date.now(); 
-                } else if (durationLogged >= (state.targetHours * 3600000)) {
-                    state.streak++; badgeType = "badge-elite"; badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
-                } else {
-                    state.streak = 0; badgeType = "badge-critical"; badgeText = "Survived";
-                }
-
+                // Save historical log item
                 state.historyLogs.unshift({
                     day: timeline.currentDayNum - 1, 
                     dateStr: lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                     durationText: formatTimeMatrix(durationLogged),
-                    statusBadgeClass: badgeType,
-                    statusText: badgeText,
                     timestamp: lastRollover.getTime()
                 });
 
+                // Auto updating ultimate record on rollover closure
+                if (durationLogged > (state.highestRecordMs || 0)) {
+                    state.highestRecordMs = durationLogged;
+                    state.highestRecordDate = lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                }
+
+                // Clean-up metrics for the new day
                 state.accumulatedTime = 0;
                 state.sessionStartTime = Date.now();
                 state.lastRolloverTimestamp = Date.now();
-                state.targetHours = getAutomatedTargetHours(); 
-                state.coinUsedToday = false; 
                 popupFiredToday = false; 
-                coinAwardedToday = false;
                 
                 saveState();
                 updateUIDisplay();
@@ -1129,19 +1088,41 @@
             }
         }
 
+        // Color mapped visual pill items rendering inside performance vault
         function renderVaultDrawer() {
             vaultCardsContainer.innerHTML = "";
             if (!state.historyLogs || state.historyLogs.length === 0) {
-                vaultCardsContainer.innerHTML = `<div class="void-message">No historical logs archived inside the Performance Vault yet. Tracking resets daily at 4:00 AM.</div>`;
+                vaultCardsContainer.innerHTML = `<div class="void-message">No historical logs archived inside the Performance Vault yet. Tracking resets daily at 00:01 Midnight.</div>`;
                 return;
             }
+            
+            let currentPeak = state.highestRecordMs || 0;
+
             state.historyLogs.forEach(item => {
                 let card = document.createElement("div");
                 card.className = "execution-card";
+                
+                let logDurationMs = parseDurationStringToMs(item.durationText);
+                let hoursVal = logDurationMs / 3600000;
+
+                // Color configuration of the mini status indicator dot
+                let dotColor = "#ffffff"; // White default (< 2h)
+                let statusLabel = "Warmup Mode";
+                if (logDurationMs >= currentPeak && currentPeak > 0) {
+                    dotColor = "var(--accent-gold)";
+                    statusLabel = "Record Breaker";
+                } else if (hoursVal >= 10.0) {
+                    dotColor = "var(--accent-red)";
+                    statusLabel = "Beast Mode";
+                } else if (hoursVal >= 2.0) {
+                    dotColor = "var(--accent-green)";
+                    statusLabel = "Deep Focus";
+                }
+
                 card.innerHTML = `
                     <div class="card-top-row">
                         <span class="card-date">Day ${item.day} — ${item.dateStr}</span>
-                        <span class="status-badge ${item.statusBadgeClass}">${item.statusText}</span>
+                        <span class="vault-pill-dot" style="color: ${dotColor}; background-color: ${dotColor};" title="${statusLabel}"></span>
                     </div>
                     <div class="card-metrics-block">
                         <div class="val">${item.durationText}</div>
@@ -1187,24 +1168,6 @@
                 clearInterval(mainLoopInterval);
                 toggleBtn.textContent = "▶ Start Session"; toggleBtn.className = "run-active";
                 saveState(); updateUIDisplay();
-            }
-        });
-
-        hardResetBtn.addEventListener("click", async () => {
-            if (confirm("☢️ SYSTEM HARD RESET WARNING:\n\nThis will completely wipe your records and vault entries permanently.\n\nAre you sure?")) {
-                clearInterval(mainLoopInterval);
-                localStorage.removeItem("warrior_chrono_state");
-                state = {};
-                initFallbackState();
-                popupFiredToday = false; coinAwardedToday = false;
-                toggleBtn.textContent = "▶ Start Session"; toggleBtn.className = "run-active";
-                vaultDrawer.style.display = "none"; vaultDrawer.classList.remove("active");
-                
-                if (currentUser) {
-                    await setDoc(doc(db, "warrior_users", currentUser.uid), state);
-                }
-                updateUIDisplay(); renderVaultDrawer();
-                alert("System tracking data has been fully re-initialized.");
             }
         });
 
