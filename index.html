@@ -1095,7 +1095,7 @@
             if (currentBoundary.getTime() > boundary.getTime()) {
                 let durationLogged = computeCurrentSessionDuration();
                 let badgeType = "badge-critical";
-                let badgeText = "Failed";
+                let badgeText = "Survived";
                 let timeline = getTrackerTimelineMetrics();
 
                 if (state.coinUsedToday) {
@@ -1103,7 +1103,7 @@
                 } else if (durationLogged >= (state.targetHours * 3600000)) {
                     state.streak++; badgeType = "badge-elite"; badgeText = `Success (${formatTargetHoursText(state.targetHours)}+)`;
                 } else {
-                    state.streak = 0; badgeType = "badge-critical"; badgeText = "Failed";
+                    state.streak = 0; badgeType = "badge-critical"; badgeText = "Survived";
                 }
 
                 state.historyLogs.unshift({
