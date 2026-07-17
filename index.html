@@ -972,31 +972,53 @@
                 recordDeltaText.style.color = "var(--accent-amber)";
             }
 
-            // Third Card Shifting Pill engine (Clean dynamic labels with no raw hour limits in titles)
+            // Third Card Shifting Pill engine - Hourly progression
             let rankClass = "pill-silver";
             let rankText = "⚪ WARMUP";
-            let rankDesc = "You are currently warming up. Maintain concentration to push into deep focus!";
+            let rankDesc = "Initiate focus to begin climbing. Keep going!";
 
             let totalHrsFloat = totalTimeMs / 3600000;
+            let hourFloor = Math.floor(totalHrsFloat);
 
+            // Hourly ranks definition (0 to 12+ hours)
+            const hourlyRanks = [
+                { rank: "⚪ WARMUP (Hr 0)", class: "pill-silver", desc: "You are currently warming up. Maintain concentration!" },
+                { rank: "⚡ INITIATE (Hr 1)", class: "pill-silver", desc: "First hour unlocked! You are finding your rhythm." },
+                { rank: "🟢 DEEP FOCUS (Hr 2)", class: "pill-green", desc: "Fantastic work! The focus pill has evolved into steady progressive green." },
+                { rank: "🧪 ALCHEMIST (Hr 3)", class: "pill-green", desc: "3 hours of deep work. Your brain is perfectly in the zone." },
+                { rank: "🛡️ KNIGHT (Hr 4)", class: "pill-green", desc: "4 hours crossed! Your discipline is building a shield against distractions." },
+                { rank: "🔥 SCHOLAR (Hr 5)", class: "pill-green", desc: "5 hours! Halfway to double digits. Keep this flame alive!" },
+                { rank: "🏹 RANGER (Hr 6)", class: "pill-red", desc: "6 hours! Entering the advanced tier. Stay sharp, aim high." },
+                { rank: "🌪️ TEMPEST (Hr 7)", class: "pill-red", desc: "7 hours! You are a storm of productivity. Unstoppable focus." },
+                { rank: "🌟 WARRIOR (Hr 8)", class: "pill-red", desc: "8 hours of focus! True warrior status achieved." },
+                { rank: "⚔️ CHAMPION (Hr 9)", class: "pill-red", desc: "9 hours! Elite mental endurance. One step away from legendary levels." },
+                { rank: "🔴 BEAST MODE (Hr 10)", class: "pill-red", desc: "Ultimate elite level! You have crossed 10+ legendary hours today!" },
+                { rank: "🌌 OVERLORD (Hr 11)", class: "pill-gold", desc: "11 hours of mastery! You control time and mind completely." },
+                { rank: "👑 IMMORTAL (Hr 12+)", class: "pill-gold", desc: "12+ Hours! You have ascended past mortal limits today." }
+            ];
+
+            // Assign based on current hour floor
+            if (hourFloor < hourlyRanks.length) {
+                rankText = hourlyRanks[hourFloor].rank;
+                rankClass = hourlyRanks[hourFloor].class;
+                rankDesc = hourlyRanks[hourFloor].desc;
+            } else {
+                // Fallback for 13+ hours
+                rankText = "👑 IMMORTAL (Hr " + hourFloor + "+)";
+                rankClass = "pill-gold";
+                rankDesc = "You have ascended past mortal limits today.";
+            }
+
+            // Record Breaker always overrides rank if they break their active peak
             if (hasBrokenRecord) {
                 rankClass = "pill-gold";
                 rankText = "🏅 RECORD BREAKER";
                 rankDesc = "Incredible! You are operating past your limits, breaking records live!";
-            } else if (totalHrsFloat >= 10.0) {
-                rankClass = "pill-red";
-                rankText = "🔴 BEAST MODE";
-                rankDesc = "Ultimate elite level achieved! You have crossed 10+ legendary hours today!";
-            } else if (totalHrsFloat >= 2.0) {
-                rankClass = "pill-green";
-                rankText = "🟢 DEEP FOCUS";
-                rankDesc = "Fantastic work! The focus pill has evolved into steady progressive green.";
             }
 
             rankPillDisplay.className = `rank-badge-pill ${rankClass}`;
             rankPillDisplay.textContent = rankText;
             rankDescriptionText.textContent = rankDesc;
-
             // Timeline calculations
             let timeline = getTrackerTimelineMetrics();
             timelineDayDisplay.textContent = `Day ${timeline.currentDayNum}`;
