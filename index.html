@@ -26,12 +26,23 @@
             background: #090b0e;
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            padding: 40px;
+            padding: clamp(16px, 3vw, 40px); /* Fluid body padding */
             min-height: 100vh;
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             position: relative;
+        }
+
+        /* Prevent excessive stretching on 4K / Ultrawide viewports */
+        .title-container,
+        .grid,
+        .main-engine-glass,
+        .vault-container {
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
         }
 
         body::before {
@@ -96,18 +107,25 @@
                 inset 0 1px 0px rgba(255, 255, 255, 0.15);
         }
 
+        /* --- Optimized Flexible Layout Grids --- */
         .grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 22px;
             margin-bottom: 28px;
         }
 
         .analytics-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 18px;
             margin-bottom: 6px;
+        }
+
+        .cards-list-layout { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+            gap: 18px; 
         }
 
         .title-container { 
@@ -115,6 +133,7 @@
             align-items: center; 
             justify-content: space-between;
             margin-bottom: 36px;
+            gap: 16px;
         }
 
         .header-actions-wrapper {
@@ -227,7 +246,7 @@
 
         .chrono-engine-container {
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-            font-size: 72px;
+            font-size: clamp(44px, 8vw, 72px); /* Responsive fluid scaling for numbers */
             font-weight: 700;
             letter-spacing: -2px;
             color: var(--text-main);
@@ -427,7 +446,6 @@
         .header-left-group { display: flex; align-items: center; gap: 18px; }
         .back-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.05); color: #fff; padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0; }
         .back-btn:hover { background: rgba(255, 255, 255, 0.12); transform: translateX(-2px); }
-        .cards-list-layout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
         
         .execution-card { background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 18px; padding: 18px; position: relative; transition: all 0.25s ease; }
         .execution-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
@@ -534,10 +552,44 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        @media (max-width: 1400px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 1250px) { .analytics-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 1100px) { .cards-list-layout { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 700px) { .grid, .analytics-grid { grid-template-columns: 1fr; } .cards-list-layout { grid-template-columns: 1fr; } .drawer-content { width: 100%; padding: 20px; } }
+        /* --- Advanced Media Query Overrides --- */
+
+        /* Lock layout strictly to 3 columns on desktops & laptops */
+        @media (min-width: 1024px) {
+            .grid, .analytics-grid, .cards-list-layout {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+        }
+
+        /* Fold smoothly into 2 columns on medium screens / tablets */
+        @media (max-width: 1023px) and (min-width: 768px) {
+            .grid, .analytics-grid, .cards-list-layout {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
+        /* Responsive UI transformation for mobile viewports */
+        @media (max-width: 767px) {
+            .grid, .analytics-grid, .cards-list-layout {
+                grid-template-columns: 1fr !important;
+            }
+            .title-container {
+                flex-direction: column;
+                text-align: center;
+                gap: 16px;
+            }
+            .header-actions-wrapper {
+                width: 100%;
+                justify-content: center;
+            }
+            .drawer-content {
+                width: 100%;
+                padding: 20px;
+            }
+            .void-message {
+                grid-column: span 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -590,7 +642,7 @@
     </div>
 </div>
 
-<div class="glass" style="text-align: center; padding: 44px 26px; margin-bottom: 28px;">
+<div class="glass main-engine-glass" style="text-align: center; padding: 44px 26px; margin-bottom: 28px;">
     <h3>⏱️ Core Focus Session Engine</h3>
     <div class="chrono-engine-container" id="chronoDisplay">00:00:00</div>
     
