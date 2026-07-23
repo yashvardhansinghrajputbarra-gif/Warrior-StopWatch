@@ -26,7 +26,7 @@
             background: #090b0e;
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            padding: clamp(16px, 3vw, 40px); /* Fluid body padding */
+            padding: clamp(16px, 3vw, 40px);
             min-height: 100vh;
             box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
@@ -34,7 +34,6 @@
             position: relative;
         }
 
-        /* Prevent excessive stretching on 4K / Ultrawide viewports */
         .title-container,
         .grid,
         .main-engine-glass,
@@ -107,7 +106,6 @@
                 inset 0 1px 0px rgba(255, 255, 255, 0.15);
         }
 
-        /* --- Optimized Flexible Layout Grids --- */
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -246,7 +244,7 @@
 
         .chrono-engine-container {
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-            font-size: clamp(44px, 8vw, 72px); /* Responsive fluid scaling for numbers */
+            font-size: clamp(44px, 8vw, 72px);
             font-weight: 700;
             letter-spacing: -2px;
             color: var(--text-main);
@@ -349,7 +347,32 @@
             transform: translateY(-1px);
         }
 
-        /* Pill Card Design Elements */
+        /* Subtle Vault Sync Action Buttons */
+        .vault-sync-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        button.vault-sync-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.35);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.2s ease;
+        }
+
+        button.vault-sync-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.85);
+        }
+
         .rank-badge-pill {
             display: flex;
             align-items: center;
@@ -403,7 +426,6 @@
             text-align: center;
         }
 
-        /* Drawer Overlay */
         .drawer-backdrop { 
             display: none; 
             position: fixed; 
@@ -468,7 +490,6 @@
 
         .void-message { text-align: center; color: var(--text-dim); font-size: 13px; padding: 40px 0; letter-spacing: 0.2px; width: 100%; grid-column: span 3; }
 
-        /* Minimalistic Aggregate Micro Metrics */
         .aggregate-sublabel {
             display: flex;
             flex-direction: column;
@@ -489,7 +510,6 @@
             font-weight: 600;
         }
 
-        /* Success Overlay Screen blur */
         .success-overlay {
             position: fixed;
             top: 0;
@@ -552,23 +572,18 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* --- Advanced Media Query Overrides --- */
-
-        /* Lock layout strictly to 3 columns on desktops & laptops */
         @media (min-width: 1024px) {
             .grid, .analytics-grid, .cards-list-layout {
                 grid-template-columns: repeat(3, 1fr) !important;
             }
         }
 
-        /* Fold smoothly into 2 columns on medium screens / tablets */
         @media (max-width: 1023px) and (min-width: 768px) {
             .grid, .analytics-grid, .cards-list-layout {
                 grid-template-columns: repeat(2, 1fr) !important;
             }
         }
 
-        /* Responsive UI transformation for mobile viewports */
         @media (max-width: 767px) {
             .grid, .analytics-grid, .cards-list-layout {
                 grid-template-columns: 1fr !important;
@@ -594,13 +609,12 @@
 </head>
 <body>
 
-<div class="header-actions-wrapper">
-    <button id="authBtn" class="auth-trigger-btn">🔑 Sign In</button>
-    <button class="history-trigger" id="openHistoryBtn">🛡️ Performance Vault</button>
-    <button id="exportBtn" style="background: rgba(255,255,255,0.08);">📥 Backup</button>
-    <button id="importBtn" style="background: rgba(255,255,255,0.08);">📤 Restore</button>
-    <input type="file" id="importFileInput" accept=".json" style="display: none;" />
-</div>
+<div class="title-container">
+    <h1>⚡ Warrior Neet Focus</h1>
+    <div class="header-actions-wrapper">
+        <button id="authBtn" class="auth-trigger-btn">🔑 Sign In</button>
+        <button class="history-trigger" id="openHistoryBtn">🛡️ Performance Vault</button>
+    </div>
 </div>
 
 <div class="grid">
@@ -663,6 +677,12 @@
                     <div class="header-left-group">
                         <button class="back-btn" id="closeVaultBtn">← Tracker</button>
                         <h2 class="vault-title">🛡️ Performance Archive Vault</h2>
+                    </div>
+                    
+                    <div class="vault-sync-group">
+                        <button id="exportBtn" class="vault-sync-btn" title="Export local session backup file">📥 Backup</button>
+                        <button id="importBtn" class="vault-sync-btn" title="Restore state from backup file">📤 Restore</button>
+                        <input type="file" id="importFileInput" accept=".json" style="display: none;" />
                     </div>
                 </div>
 
@@ -751,7 +771,6 @@
     const auth = getAuth(app);
     const provider = new GoogleAuthProvider();
 
-    // Timelines defined
     const START_DATE = new Date(2026, 2, 14, 0, 1, 0); 
     const TARGET_DATE = new Date(2027, 4, 2, 0, 1, 0);  
 
@@ -760,7 +779,6 @@
     let popupFiredToday = false;
     let mainLoopInterval = null;
 
-    // Safety migrations for old versions of State values (Seamless Compatibility)
     function initFallbackState() {
         if (state.accumulatedTime === undefined) state.accumulatedTime = 0;
         if (state.engineActive === undefined) state.engineActive = false;
@@ -768,9 +786,7 @@
         if (state.historyLogs === undefined) state.historyLogs = [];
         if (state.lastRolloverTimestamp === undefined) state.lastRolloverTimestamp = Date.now();
         
-        // Dynamic Peak Record calculations
         if (state.highestRecordMs === undefined) {
-            // Check logs auto-scanned from legacy histories
             let scanMax = 0;
             let scanDate = "N/A";
             if (state.historyLogs && state.historyLogs.length > 0) {
@@ -786,7 +802,6 @@
             state.highestRecordDate = scanDate;
         }
 
-        // Wipe obsolete variables gracefully
         delete state.streak;
         delete state.targetHours;
         delete state.warriorCoins;
@@ -831,6 +846,9 @@
         const prevMonth2Display = document.getElementById("prevMonth2Display");
         
         const authBtn = document.getElementById("authBtn");
+        const exportBtn = document.getElementById("exportBtn");
+        const importBtn = document.getElementById("importBtn");
+        const importFileInput = document.getElementById("importFileInput");
 
         async function saveState() {
             localStorage.setItem("warrior_chrono_state", JSON.stringify(state));
@@ -900,7 +918,6 @@
 
             let liveMs = computeCurrentSessionDuration();
             
-            // Peak computation
             let finalPeakMs = state.highestRecordMs || 0;
             let peakDateStr = state.highestRecordDate || "N/A";
             
@@ -912,7 +929,6 @@
                 return new Date(Date.parse(logItem.dateStr) || Date.now());
             }
 
-            // Calculation of cumulative Lifetime focus
             let lifetimeMs = liveMs;
             logs.forEach(log => {
                 lifetimeMs += parseDurationStringToMs(log.durationText);
@@ -925,7 +941,6 @@
                 return new Date(d.setDate(d.getDate() - day + (day === 0 ? -6 : 1)));
             }
 
-            // Weekly boundaries logic
             let startOfCurrentWeek = getStartOfWeek(currentAnchor);
             let startOfLastWeek = new Date(startOfCurrentWeek.getTime() - 7 * 24 * 60 * 60 * 1000);
             let startOfPrevWeek2 = new Date(startOfCurrentWeek.getTime() - 14 * 24 * 60 * 60 * 1000);
@@ -950,7 +965,6 @@
             lastWeekDisplay.textContent = formatAnalyticsTime(lastWeekMs);
             prevWeek2Display.textContent = formatAnalyticsTime(prevWeek2Ms);
 
-            // Monthly boundaries logic
             let currentMonthIdx = currentAnchor.getMonth();
             let currentYearVal = currentAnchor.getFullYear();
 
@@ -984,7 +998,6 @@
             chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
             currentSessionRawDisplay.textContent = `Current Session: ${formatProgressElapsedText(totalTimeMs)}`;
 
-            // Record breaker card setup
             let highestRecord = state.highestRecordMs || 0;
             recordValueDisplay.textContent = formatProgressElapsedText(highestRecord);
             recordAchievedDateDisplay.textContent = state.highestRecordDate ? `Achieved on: ${state.highestRecordDate}` : "Achieved on: N/A";
@@ -1004,7 +1017,6 @@
                 
                 if (!popupFiredToday) {
                     popupFiredToday = true;
-                    // Persist new peak
                     let timeline = getTrackerTimelineMetrics();
                     state.highestRecordMs = totalTimeMs;
                     state.highestRecordDate = timeline.dateStr;
@@ -1025,7 +1037,6 @@
                 recordDeltaText.style.color = "var(--accent-amber)";
             }
 
-            // Third Card Shifting Pill engine - Hourly progression
             let rankClass = "pill-silver";
             let rankText = "⚪ WARMUP";
             let rankDesc = "Initiate focus to begin climbing. Keep going!";
@@ -1033,7 +1044,6 @@
             let totalHrsFloat = totalTimeMs / 3600000;
             let hourFloor = Math.floor(totalHrsFloat);
 
-            // Hourly ranks definition (0 to 12+ hours)
             const hourlyRanks = [
                 { rank: "⚪ WARMUP (Hr 0)", class: "pill-silver", desc: "You are currently warming up. Maintain concentration!" },
                 { rank: "⚡ INITIATE (Hr 1)", class: "pill-silver", desc: "First hour unlocked! You are finding your rhythm." },
@@ -1050,19 +1060,16 @@
                 { rank: "👑 IMMORTAL (Hr 12+)", class: "pill-gold", desc: "12+ Hours! You have ascended past mortal limits today." }
             ];
 
-            // Assign based on current hour floor
             if (hourFloor < hourlyRanks.length) {
                 rankText = hourlyRanks[hourFloor].rank;
                 rankClass = hourlyRanks[hourFloor].class;
                 rankDesc = hourlyRanks[hourFloor].desc;
             } else {
-                // Fallback for 13+ hours
                 rankText = "👑 IMMORTAL (Hr " + hourFloor + "+)";
                 rankClass = "pill-gold";
                 rankDesc = "You have ascended past mortal limits today.";
             }
 
-            // Record Breaker always overrides rank if they break their active peak
             if (hasBrokenRecord) {
                 rankClass = "pill-gold";
                 rankText = "🏅 RECORD BREAKER";
@@ -1072,7 +1079,7 @@
             rankPillDisplay.className = `rank-badge-pill ${rankClass}`;
             rankPillDisplay.textContent = rankText;
             rankDescriptionText.textContent = rankDesc;
-            // Timeline calculations
+
             let timeline = getTrackerTimelineMetrics();
             timelineDayDisplay.textContent = `Day ${timeline.currentDayNum}`;
             timelineRemainingDisplay.textContent = `(${timeline.daysRemaining} Days Left)`;
@@ -1124,12 +1131,10 @@
             updateUIDisplay();
         });
 
-        // 00:01 Midnight Standard Rollover calculation
         function evaluateTemporalRollover() {
             let now = new Date();
             let lastRollover = new Date(state.lastRolloverTimestamp);
             
-            // Checking standard transition crossing of midnight (00:01 AM)
             let boundary = new Date(lastRollover.getFullYear(), lastRollover.getMonth(), lastRollover.getDate(), 0, 1, 0, 0);
             let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 1, 0, 0);
 
@@ -1137,7 +1142,6 @@
                 let durationLogged = computeCurrentSessionDuration();
                 let timeline = getTrackerTimelineMetrics();
 
-                // Save historical log item
                 state.historyLogs.unshift({
                     day: timeline.currentDayNum - 1, 
                     dateStr: lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -1145,13 +1149,11 @@
                     timestamp: lastRollover.getTime()
                 });
 
-                // Auto updating ultimate record on rollover closure
                 if (durationLogged > (state.highestRecordMs || 0)) {
                     state.highestRecordMs = durationLogged;
                     state.highestRecordDate = lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                 }
 
-                // Clean-up metrics for the new day
                 state.accumulatedTime = 0;
                 state.sessionStartTime = Date.now();
                 state.lastRolloverTimestamp = Date.now();
@@ -1163,7 +1165,6 @@
             }
         }
 
-        // Color mapped visual pill items rendering inside performance vault
         function renderVaultDrawer() {
             vaultCardsContainer.innerHTML = "";
             if (!state.historyLogs || state.historyLogs.length === 0) {
@@ -1180,8 +1181,7 @@
                 let logDurationMs = parseDurationStringToMs(item.durationText);
                 let hoursVal = logDurationMs / 3600000;
 
-                // Color configuration of the mini status indicator dot
-                let dotColor = "#ffffff"; // White default (< 2h)
+                let dotColor = "#ffffff";
                 let statusLabel = "Warmup Mode";
                 if (logDurationMs >= currentPeak && currentPeak > 0) {
                     dotColor = "var(--accent-gold)";
@@ -1257,6 +1257,43 @@
 
         closeSuccessBtn.addEventListener("click", () => {
             successOverlay.classList.remove("show"); setTimeout(() => successOverlay.style.display = "none", 400);
+        });
+
+        // --- SUBTLE VAULT BACKUP & RESTORE LOGIC ---
+        exportBtn.addEventListener("click", () => {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `warrior_focus_backup_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        });
+
+        importBtn.addEventListener("click", () => {
+            importFileInput.click();
+        });
+
+        importFileInput.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const importedState = JSON.parse(e.target.result);
+                    if (confirm("Are you sure you want to overwrite current stats with this backup file?")) {
+                        state = importedState;
+                        await saveState();
+                        updateUIDisplay();
+                        renderVaultDrawer();
+                        alert("Data successfully restored!");
+                    }
+                } catch (err) {
+                    alert("Invalid backup file format.");
+                }
+            };
+            reader.readAsText(file);
         });
 
         evaluateTemporalRollover();
