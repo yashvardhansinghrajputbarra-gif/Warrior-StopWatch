@@ -594,12 +594,13 @@
 </head>
 <body>
 
-<div class="title-container">
-    <h1>⚡ Warrior Neet Focus</h1>
-    <div class="header-actions-wrapper">
-        <button id="authBtn" class="auth-trigger-btn">🔑 Sign In</button>
-        <button class="history-trigger" id="openHistoryBtn">🛡️ Performance Vault</button>
-    </div>
+<div class="header-actions-wrapper">
+    <button id="authBtn" class="auth-trigger-btn">🔑 Sign In</button>
+    <button class="history-trigger" id="openHistoryBtn">🛡️ Performance Vault</button>
+    <button id="exportBtn" style="background: rgba(255,255,255,0.08);">📥 Backup</button>
+    <button id="importBtn" style="background: rgba(255,255,255,0.08);">📤 Restore</button>
+    <input type="file" id="importFileInput" accept=".json" style="display: none;" />
+</div>
 </div>
 
 <div class="grid">
