@@ -3,810 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="B44bySSFlpNAb5JTwGNOxjKcbdqOMNw6LsOH4i_bL5Q" />
-    
-    <title>Warrior Neet Focus</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230071e3%22 opacity=%220.15%22/><circle cx=%2250%22 cy=%2250%22 r=%2232%22 fill=%22none%22 stroke=%22%230071e3%22 stroke-width=%224.5%22/><circle cx=%2250%22 cy=%2250%22 r=%2214%22 fill=%22%23ff3b30%22/><path d=%22M50 8 L50 22 M50 78 L50 92 M8 50 L22 50 M78 50 L92 50%22 stroke=%22%23ffffff%22 stroke-width=%225.5%22 stroke-linecap=%22round%22/></svg>">
+    <title>Zen Focus Engine</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><circle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%230071e3%22 opacity=%220.15%22/><circle cx=%2250%22 cy=%2250%22 r=%2232%22 fill=%22none%22 stroke=%22%230071e3%22 stroke-width=%224.5%22/><circle cx=%2250%22 cy=%2250%22 r=%2214%22 fill=%22%2334c759%22/></svg>">
     <style>
         :root {
-            --glass-bg: rgba(20, 24, 33, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.07);
+            --glass-bg: rgba(18, 24, 38, 0.72);
+            --glass-border: rgba(255, 255, 255, 0.12);
             --text-main: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.5);
-            --text-pill: rgba(255, 255, 255, 0.35);
+            --text-dim: rgba(255, 255, 255, 0.55);
             --accent-blue: #0071e3;
             --accent-green: #34c759;
             --accent-red: #ff3b30;
-            --accent-amber: #ff9500;
-            --accent-gold: #ffd700;
+            --glow-color: rgba(52, 199, 89, 0.22);
+            --aura-color: rgba(0, 113, 227, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
             margin: 0;
-            background: #090b0e;
+            background: #07090e;
             color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            padding: clamp(16px, 3vw, 40px);
+            padding: clamp(16px, 4vw, 40px);
             min-height: 100vh;
-            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
             position: relative;
         }
 
-        .title-container,
-        .grid,
-        .main-engine-glass,
-        .vault-container {
-            max-width: 1400px;
-            margin-left: auto;
-            margin-right: auto;
-            width: 100%;
-        }
-
+        /* Ambient Dynamic Background Aura */
         body::before {
             content: "";
             position: fixed;
-            top: -30%;
-            left: -30%;
-            width: 160%;
-            height: 160%;
+            top: -20%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
             background: 
-                radial-gradient(circle at 18% 25%, #141c2f 0%, transparent 45%),
-                radial-gradient(circle at 85% 15%, #0f1824 0%, transparent 50%),
-                radial-gradient(circle at 45% 75%, #0a111f 0%, transparent 55%),
-                radial-gradient(circle at 80% 80%, #17243a 0%, transparent 40%);
+                radial-gradient(circle at 50% 45%, var(--aura-color) 0%, transparent 55%),
+                radial-gradient(circle at 80% 20%, rgba(10, 132, 255, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 20% 80%, rgba(48, 209, 88, 0.08) 0%, transparent 50%);
             z-index: -2;
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        body::after {
-            content: "";
-            position: fixed;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(100,125,165,0.12) 0%, rgba(0,0,0,0) 70%);
-            top: 25%;
-            right: 5%;
-            z-index: -1;
-            filter: blur(50px);
-            animation: fluidFloat 15s ease-in-out infinite alternate;
+        body.running-mode::before {
+            --aura-color: rgba(52, 199, 89, 0.28);
         }
 
-        @keyframes fluidFloat {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(50px) scale(1.08); }
-        }
-
-        .glass {
-            background: var(--glass-bg);
-            backdrop-filter: blur(30px) saturate(140%);
-            -webkit-backdrop-filter: blur(30px) saturate(140%);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 28px;
-            position: relative;
-            box-sizing: border-box;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                        background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                        border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 
-                0 4px 24px -1px rgba(0, 0, 0, 0.3),
-                0 25px 55px -5px rgba(0, 0, 0, 0.45),
-                inset 0 1px 0px rgba(255, 255, 255, 0.1);
-        }
-        
-        .glass:hover {
-            transform: translateY(-2px);
-            background: rgba(28, 33, 46, 0.75);
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 
-                0 10px 35px -1px rgba(0, 0, 0, 0.35),
-                0 30px 65px -5px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0px rgba(255, 255, 255, 0.15);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 22px;
-            margin-bottom: 28px;
-        }
-
-        .analytics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 18px;
-            margin-bottom: 6px;
-        }
-
-        .cards-list-layout { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
-            gap: 18px; 
-        }
-
-        .title-container { 
-            display: flex; 
-            align-items: center; 
+        .header-container {
+            width: 100%;
+            max-width: 1100px;
+            display: flex;
+            align-items: center;
             justify-content: space-between;
-            margin-bottom: 36px;
+            flex-wrap: wrap;
             gap: 16px;
+            margin-bottom: 20px;
         }
 
-        .header-actions-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        h1 { 
-            margin: 0; 
-            font-size: 28px;
-            font-weight: 700; 
-            letter-spacing: -0.5px; 
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
-        }
-
-        h2.vault-title { 
-            font-size: 20px;
-            font-weight: 700; 
-            letter-spacing: -0.5px;
-            color: var(--text-main);
+        h1 {
             margin: 0;
-            text-transform: uppercase;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.75) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        h3 {
-            margin-top: 0;
-            margin-bottom: 16px;
+        .timeline-badge {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(160%);
+            -webkit-backdrop-filter: blur(25px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            padding: 8px 20px;
+            border-radius: 99px;
             font-size: 13px;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            color: var(--text-dim);
-            text-transform: uppercase;
-        }
-
-        .timeline-header {
+            color: rgba(255, 255, 255, 0.9);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-        }
-        .timeline-header h3 { margin: 0; }
-        
-        .live-badge {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-dim);
-            padding: 3px 10px;
-            border-radius: 99px;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
         }
 
-        .progress-container {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 99px;
-            height: 6px;
+        .timeline-badge span.dot {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 8px;
+        }
+
+        .main-engine-container {
             width: 100%;
-            margin-top: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        
-        .progress-bar {
-            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-            border-radius: 99px;
-        }
-
-        .num {
-            font-size: 38px;
-            font-weight: 700;
-            letter-spacing: -1px;
-            color: var(--text-main);
-            margin-bottom: 12px;
-            white-space: nowrap;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-
-        .mono-num {
-            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-        }
-
-        .timeline-body-wrapper {
+            max-width: 850px;
+            margin: auto 0;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            gap: 2px;
-            margin-bottom: 12px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
         }
-        .days-left-notation {
-            font-size: 13px;
-            font-weight: 500;
+
+        /* Glass Card with Dynamic Breathing Edge */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            border-radius: 36px;
+            padding: clamp(36px, 6vw, 64px) clamp(24px, 5vw, 56px);
+            width: 100%;
+            box-shadow: 
+                0 10px 30px -5px rgba(0, 0, 0, 0.5),
+                0 30px 70px -10px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0px rgba(255, 255, 255, 0.15);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle Top Glow Line */
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 10%;
+            right: 10%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+        }
+
+        /* Status Indicator Pill */
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: var(--text-dim);
+            margin-bottom: 20px;
+            transition: all 0.4s ease;
         }
 
-        .sub-metric {
-            margin-top: 2px;
-            margin-bottom: 0;
-            font-size: 12px;
-            color: var(--text-pill);
+        .status-beacon {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--text-dim);
+            transition: all 0.4s ease;
         }
 
-        .chrono-engine-container {
+        body.running-mode .status-pill {
+            background: rgba(52, 199, 89, 0.12);
+            border-color: rgba(52, 199, 89, 0.3);
+            color: #30d158;
+            box-shadow: 0 0 15px rgba(52, 199, 89, 0.15);
+        }
+
+        body.running-mode .status-beacon {
+            background: #30d158;
+            box-shadow: 0 0 8px #30d158;
+            animation: pulse-beacon 1.8s infinite;
+        }
+
+        @keyframes pulse-beacon {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .chrono-display {
             font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-            font-size: clamp(44px, 8vw, 72px);
+            font-size: var(--stopwatch-scale, clamp(52px, 10vw, 88px));
             font-weight: 700;
             letter-spacing: -2px;
             color: var(--text-main);
-            margin: 28px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            margin: 0 0 32px 0;
+            text-shadow: 0 4px 25px rgba(0, 0, 0, 0.7);
+            transition: font-size 0.15s ease-out, text-shadow 0.4s ease;
+            line-height: 1;
+        }
+
+        body.running-mode .chrono-display {
+            text-shadow: 0 0 30px rgba(52, 199, 89, 0.25), 0 4px 25px rgba(0, 0, 0, 0.7);
         }
 
         .controls-cluster {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 14px;
-            max-width: 400px;
+            gap: 20px;
+            width: 100%;
+            max-width: 340px;
             margin: 0 auto;
         }
 
         .action-row {
             display: flex;
             justify-content: center;
-            gap: 14px;
             width: 100%;
         }
 
         button {
-            background: rgba(255, 255, 255, 0.06);
+            width: 100%;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.05) 100%);
             color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 99px;
-            padding: 10px 24px;
+            padding: 16px 32px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
         }
 
         button:hover {
-            background: rgba(255, 255, 255, 0.14); 
-            border-color: rgba(255, 255, 255, 0.18);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
         }
 
-        button:active { transform: scale(0.96); }
+        button:active { transform: scale(0.97); }
 
-        button.run-active { background: var(--accent-blue); border: none; }
-        button.run-active:hover { background: #007bf3; }
-        
-        button.halt-active { background: rgba(255, 59, 48, 0.15); border-color: rgba(255, 59, 48, 0.25); color: #ff453a; }
-        button.halt-active:hover { background: rgba(255, 59, 48, 0.25); border-color: rgba(255, 59, 48, 0.35); }
+        button.run-active {
+            background: linear-gradient(180deg, #0077ff 0%, #005bb5 100%);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 6px 25px rgba(0, 113, 227, 0.4);
+        }
+        button.run-active:hover {
+            box-shadow: 0 8px 30px rgba(0, 113, 227, 0.6);
+        }
+
+        button.halt-active {
+            background: linear-gradient(180deg, rgba(255, 59, 48, 0.25) 0%, rgba(255, 59, 48, 0.12) 100%);
+            border-color: rgba(255, 59, 48, 0.4);
+            color: #ff453a;
+            box-shadow: 0 6px 25px rgba(255, 59, 48, 0.25);
+        }
+        button.halt-active:hover {
+            background: linear-gradient(180deg, rgba(255, 59, 48, 0.35) 0%, rgba(255, 59, 48, 0.2) 100%);
+        }
 
         button.reset-engine-btn {
             background: transparent;
-            border: 1px dashed rgba(255, 255, 255, 0.12);
+            border: 1px dashed rgba(255, 255, 255, 0.16);
             color: var(--text-dim);
-            font-size: 11px;
-            font-weight: 500;
-            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 8px 22px;
             border-radius: 99px;
-            transition: all 0.2s ease;
             box-shadow: none;
+            width: auto;
         }
         button.reset-engine-btn:hover {
-            background: rgba(255, 59, 48, 0.08);
-            border-color: rgba(255, 59, 48, 0.25);
+            background: rgba(255, 59, 48, 0.1);
+            border-color: rgba(255, 59, 48, 0.4);
             color: #ff453a;
+            transform: none;
         }
 
-        button.auth-trigger-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-main);
-        }
-        button.auth-trigger-btn:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.18);
-        }
-
-        .history-trigger {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 99px;
-            font-size: 13px;
-            cursor: pointer;
+        /* Floating Bottom Scale Slider Pill */
+        .scale-control-wrapper {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            justify-content: center;
+            gap: 14px;
+            padding: 10px 22px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 99px;
+            backdrop-filter: blur(25px) saturate(150%);
+            -webkit-backdrop-filter: blur(25px) saturate(150%);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            margin-top: 20px;
         }
-
-        .history-trigger:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.22);
+        .scale-control-wrapper:hover {
+            opacity: 1;
             transform: translateY(-1px);
         }
 
-        /* Subtle Vault Sync Action Buttons */
-        .vault-sync-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        button.vault-sync-btn {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.35);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: none;
-            transition: all 0.2s ease;
-        }
-
-        button.vault-sync-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        .rank-badge-pill {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 99px;
-            padding: 10px 16px;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .pill-silver {
-            background: rgba(255, 255, 255, 0.06);
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.15);
-        }
-        .pill-green {
-            background: rgba(52, 199, 89, 0.12);
-            color: #34c759;
-            box-shadow: 0 0 20px rgba(52, 199, 89, 0.15);
-            border-color: rgba(52, 199, 89, 0.3);
-        }
-        .pill-red {
-            background: rgba(255, 59, 48, 0.15);
-            color: #ff3b30;
-            box-shadow: 0 0 25px rgba(255, 59, 48, 0.25);
-            border-color: rgba(255, 59, 48, 0.4);
-        }
-        .pill-gold {
-            background: rgba(255, 215, 0, 0.15);
-            color: #ffd700;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.35);
-            border-color: rgba(255, 215, 0, 0.55);
-        }
-
-        .dark-pill-wrapper {
-            background: rgba(10, 12, 17, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 14px;
-            padding: 10px 14px;
-            font-size: 12px;
-            color: var(--text-dim);
-            font-family: ui-monospace, SFMono-Regular, monospace;
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .drawer-backdrop { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.45); 
-            backdrop-filter: blur(0px); 
-            -webkit-backdrop-filter: blur(0px); 
-            z-index: 2000;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        .drawer-backdrop.active { 
-            display: block; 
-            backdrop-filter: blur(25px); 
-            -webkit-backdrop-filter: blur(25px); 
-        }
-        .drawer-content { 
-            position: fixed; 
-            top: 0; 
-            right: -100%;
-            width: 85%; 
-            max-width: 1050px; 
-            height: 100%; 
-            background: rgba(13, 16, 23, 0.88); 
-            box-shadow: -20px 0 60px rgba(0,0,0,0.6); 
-            border-left: 1px solid rgba(255,255,255,0.06);
-            z-index: 2001; 
-            transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
-            overflow-y: auto; 
-            padding: 36px; 
-            box-sizing: border-box;
-        }
-        .drawer-backdrop.active .drawer-content { right: 0; }
-        
-        .vault-container { display: flex; flex-direction: column; gap: 24px; width: 100%; }
-        .glass-panel { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 22px; padding: 26px; box-sizing: border-box; }
-        .header-layout { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 18px; margin-bottom: 22px; gap: 16px; }
-        .header-left-group { display: flex; align-items: center; gap: 18px; }
-        .back-btn { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.05); color: #fff; padding: 8px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0; }
-        .back-btn:hover { background: rgba(255, 255, 255, 0.12); transform: translateX(-2px); }
-        
-        .execution-card { background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 18px; padding: 18px; position: relative; transition: all 0.25s ease; }
-        .execution-card:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); transform: translateY(-2px); }
-        .card-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card-date { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
-        
-        .vault-pill-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 8px currentColor;
-        }
-
-        .card-metrics-block {
-            background: rgba(0, 0, 0, 0.25); padding: 12px; border-radius: 10px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.02);
-        }
-        .card-metrics-block .val { font-size: 22px; font-weight: 700; color: #fff; font-family: ui-monospace, SFMono-Regular, monospace; }
-        .card-metrics-block .label { font-size: 9px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-top: 2px; }
-
-        .void-message { text-align: center; color: var(--text-dim); font-size: 13px; padding: 40px 0; letter-spacing: 0.2px; width: 100%; grid-column: span 3; }
-
-        .aggregate-sublabel {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-top: 8px;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
-            padding-top: 8px;
-        }
-        .aggregate-row {
-            display: flex;
-            justify-content: space-between;
+        .scale-icon {
             font-size: 11px;
-            font-family: ui-monospace, monospace;
+            font-weight: 700;
             color: var(--text-dim);
-        }
-        .aggregate-row .agg-val {
-            color: rgba(255,255,255,0.85);
-            font-weight: 600;
+            user-select: none;
         }
 
-        .success-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            z-index: 3000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .success-overlay.show {
-            opacity: 1;
-        }
-        .success-popup {
-            background: var(--glass-bg);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            border-radius: 28px;
-            padding: 40px;
-            text-align: center;
-            max-width: 380px;
-            width: 85%;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.15);
-            transform: scale(0.8);
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .success-overlay.show .success-popup {
-            transform: scale(1);
-        }
-        .success-icon {
-            font-size: 64px;
-            margin-bottom: 18px;
-            display: inline-block;
-            filter: drop-shadow(0 4px 10px rgba(255,215,0,0.4));
-            animation: popScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        @keyframes popScale {
-            0% { transform: scale(0) rotate(-20deg); }
-            100% { transform: scale(1) rotate(0deg); }
-        }
-        .dismiss-btn {
-            background: rgba(255, 255, 255, 0.08);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 30px;
-            font-size: 14px;
-            font-weight: 600;
+        input[type="range"].scale-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 140px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.18);
             border-radius: 99px;
-            width: 100%;
+            outline: none;
             cursor: pointer;
-            transition: background 0.2s, border-color 0.2s;
-        }
-        .dismiss-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        @media (min-width: 1024px) {
-            .grid, .analytics-grid, .cards-list-layout {
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
+        input[type="range"].scale-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--text-main);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+            transition: transform 0.1s ease;
         }
 
-        @media (max-width: 1023px) and (min-width: 768px) {
-            .grid, .analytics-grid, .cards-list-layout {
-                grid-template-columns: repeat(2, 1fr) !important;
-            }
+        input[type="range"].scale-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
         }
 
-        @media (max-width: 767px) {
-            .grid, .analytics-grid, .cards-list-layout {
-                grid-template-columns: 1fr !important;
-            }
-            .title-container {
-                flex-direction: column;
-                text-align: center;
-                gap: 16px;
-            }
-            .header-actions-wrapper {
-                width: 100%;
+        @media (max-width: 600px) {
+            .header-container {
                 justify-content: center;
-            }
-            .drawer-content {
-                width: 100%;
-                padding: 20px;
-            }
-            .void-message {
-                grid-column: span 1;
             }
         }
     </style>
 </head>
 <body>
 
-<div class="title-container">
-    <h1>⚡ Warrior Neet Focus</h1>
-    <div class="header-actions-wrapper">
-        <button id="authBtn" class="auth-trigger-btn">🔑 Sign In</button>
-        <button class="history-trigger" id="openHistoryBtn">🛡️ Performance Vault</button>
+<div class="header-container">
+    <h1>Zen Focus Engine</h1>
+    <div class="timeline-badge" id="timelineBadge">
+        <span id="badgeDay">Day 0</span>
+        <span class="dot">•</span>
+        <span id="badgeRemaining">0 Days Left</span>
+        <span class="dot">•</span>
+        <span id="badgeDate">---</span>
     </div>
 </div>
 
-<div class="grid">
-    <div class="glass">
-        <div class="timeline-header">
-            <h3>📅 Timeline</h3>
-            <span class="live-badge">LIVE</span>
+<div class="main-engine-container">
+    <div class="glass-card">
+        <div class="status-pill" id="statusPill">
+            <span class="status-beacon"></span>
+            <span id="statusText">IDLE • READY</span>
         </div>
-        <div class="timeline-body-wrapper">
-            <div class="num" id="timelineDayDisplay" style="margin-bottom: 0;">Day 0</div>
-            <div class="days-left-notation" id="timelineRemainingDisplay">(0 Days Left)</div>
-        </div>
-        <p class="sub-metric" id="timelineDateDisplay">---</p>
-    </div>
 
-    <div class="glass">
-        <div class="timeline-header">
-            <h3>🏆 Record Breaker</h3>
-        </div>
-        <div class="num mono-num" id="recordValueDisplay">0h 00m</div>
-        <div class="dark-pill-wrapper" id="recordAchievedDateDisplay">Achieved on: N/A</div>
+        <div class="chrono-display" id="chronoDisplay">00:00:00</div>
         
-        <p id="recordDeltaText" style="margin-top: 14px; margin-bottom: 0; font-size: 11px; font-weight: 600; color: var(--accent-amber); text-transform: uppercase; letter-spacing: 0.2px;">Remaining: 0m</p>
-        <div class="progress-container">
-            <div id="recordProgressBar" class="progress-bar"></div>
-        </div>
-    </div>
-
-    <div class="glass">
-        <div class="timeline-header">
-            <h3>🛡️ FOCUS RANK</h3>
-        </div>
-        <div style="margin-top: 10px; margin-bottom: 12px;">
-            <div class="rank-badge-pill pill-silver" id="rankPillDisplay">⚪ WARMUP</div>
-        </div>
-        <div class="dark-pill-wrapper" id="rankDescriptionText" style="font-size: 11px; line-height: 1.4;">
-            Initiate focus to begin climbing. Keep going!
-        </div>
-        <p class="sub-metric" id="currentSessionRawDisplay" style="margin-top: 10px; text-align: center; font-weight: 500;">Current Session: 0m</p>
-    </div>
-</div>
-
-<div class="glass main-engine-glass" style="text-align: center; padding: 44px 26px; margin-bottom: 28px;">
-    <h3>⏱️ Core Focus Session Engine</h3>
-    <div class="chrono-engine-container" id="chronoDisplay">00:00:00</div>
-    
-    <div class="controls-cluster">
-        <div class="action-row">
-            <button id="toggleBtn" class="run-active">▶ Start Session</button>
-        </div>
-        <button id="resetEngineBtn" class="reset-engine-btn">🔄 Reset Today's Session</button>
-    </div>
-</div>
-
-<div id="vaultDrawer" class="drawer-backdrop">
-    <div class="drawer-content">
-        <div class="vault-container">
-            <div class="glass-panel">
-                <div class="header-layout">
-                    <div class="header-left-group">
-                        <button class="back-btn" id="closeVaultBtn">← Tracker</button>
-                        <h2 class="vault-title">🛡️ Performance Archive Vault</h2>
-                    </div>
-                    
-                    <div class="vault-sync-group">
-                        <button id="exportBtn" class="vault-sync-btn" title="Export local session backup file">📥 Backup</button>
-                        <button id="importBtn" class="vault-sync-btn" title="Restore state from backup file">📤 Restore</button>
-                        <input type="file" id="importFileInput" accept=".json" style="display: none;" />
-                    </div>
-                </div>
-
-                <div class="analytics-grid" style="margin-top: 22px;">
-                    <div class="glass" style="background: rgba(255,255,255,0.015); padding: 18px;">
-                        <h3 style="font-size: 11px; margin-bottom: 8px;">👑 Peak Session</h3>
-                        <div class="num mono-num" id="peakDisplay" style="font-size: 24px; margin-bottom: 4px;">0h 00m</div>
-                        <p class="sub-metric" id="peakSubText" style="font-size: 11px;">Highest Focus Record</p>
-                        
-                        <div class="aggregate-sublabel">
-                            <div class="aggregate-row">
-                                <span>Lifetime Focus:</span>
-                                <span class="agg-val" id="lifetimeFocusDisplay">0h 00m</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="glass" style="background: rgba(255,255,255,0.015); padding: 18px;">
-                        <h3 style="font-size: 11px; margin-bottom: 8px;">📊 Weekly Aggregate</h3>
-                        <div class="num mono-num" id="weeklyDisplay" style="font-size: 24px; margin-bottom: 4px;">0h 00m</div>
-                        <p class="sub-metric" id="weeklySubText" style="font-size: 11px;">Current Week Focus</p>
-                        
-                        <div class="aggregate-sublabel">
-                            <div class="aggregate-row">
-                                <span>W-1 (Last Week):</span>
-                                <span class="agg-val" id="lastWeekDisplay">0h 00m</span>
-                            </div>
-                            <div class="aggregate-row">
-                                <span>W-2 (Prev Week):</span>
-                                <span class="agg-val" id="prevWeek2Display">0h 00m</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="glass" style="background: rgba(255,255,255,0.015); padding: 18px;">
-                        <h3 style="font-size: 11px; margin-bottom: 8px;">📈 Monthly Aggregate</h3>
-                        <div class="num mono-num" id="monthlyDisplay" style="font-size: 24px; margin-bottom: 4px;">0h 00m</div>
-                        <p class="sub-metric" id="monthlySubText" style="font-size: 11px;">Current Month Focus</p>
-                        
-                        <div class="aggregate-sublabel">
-                            <div class="aggregate-row">
-                                <span>M-1 (Last Month):</span>
-                                <span class="agg-val" id="lastMonthDisplay">0h 00m</span>
-                            </div>
-                            <div class="aggregate-row">
-                                <span>M-2 (Prev Month):</span>
-                                <span class="agg-val" id="prevMonth2Display">0h 00m</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="controls-cluster">
+            <div class="action-row">
+                <button id="toggleBtn" class="run-active">▶ Start Session</button>
             </div>
-            
-            <div class="cards-list-layout" id="vaultCardsContainer"></div>
+            <button id="resetEngineBtn" class="reset-engine-btn">🔄 Reset Today's Session</button>
         </div>
     </div>
 </div>
 
-<div id="successOverlay" class="success-overlay">
-    <div class="success-popup">
-        <div class="success-icon" id="successIcon">🏅</div>
-        <h2 style="margin: 0 0 10px 0; font-size: 24px; font-weight: 700; letter-spacing: -0.5px;" id="successTitle">New Record Set!</h2>
-        <p style="margin: 0 0 28px 0; font-size: 14px; color: var(--text-dim); line-height: 1.5;" id="successMessage">
-            You have successfully crushed your all-time highest focus record! You are officially a legend.
-        </p>
-        <button class="dismiss-btn" id="closeSuccessBtn">Dismiss</button>
-    </div>
+<div class="scale-control-wrapper" title="Adjust display size for viewing from afar">
+    <span class="scale-icon">A</span>
+    <input type="range" id="scaleSlider" class="scale-slider" min="48" max="140" value="76">
+    <span class="scale-icon" style="font-size: 15px;">A</span>
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyD8XKirnXY-LsPMEG2Wnch-uuYB6dLgbro",
-        authDomain: "warrior-neet-trackerop.firebaseapp.com",
-        projectId: "warrior-neet-trackerop",
-        storageBucket: "warrior-neet-trackerop.firebasestorage.app",
-        messagingSenderId: "644118650586",
-        appId: "1:644118650586:web:b104a317182a9c861e4fe3"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
-
+<script>
+    const DEFAULT_SCALE = 76;
     const START_DATE = new Date(2026, 2, 14, 0, 1, 0); 
     const TARGET_DATE = new Date(2027, 4, 2, 0, 1, 0);  
 
-    let state = JSON.parse(localStorage.getItem("warrior_chrono_state") || "{}");
-    let currentUser = null;
-    let popupFiredToday = false;
+    let rawSavedState = localStorage.getItem("zen_chrono_state") || localStorage.getItem("warrior_chrono_state") || "{}";
+    let state = JSON.parse(rawSavedState);
+
     let mainLoopInterval = null;
 
     function initFallbackState() {
         if (state.accumulatedTime === undefined) state.accumulatedTime = 0;
         if (state.engineActive === undefined) state.engineActive = false;
         if (state.sessionStartTime === undefined) state.sessionStartTime = 0;
-        if (state.historyLogs === undefined) state.historyLogs = [];
         if (state.lastRolloverTimestamp === undefined) state.lastRolloverTimestamp = Date.now();
-        
-        if (state.highestRecordMs === undefined) {
-            let scanMax = 0;
-            let scanDate = "N/A";
-            if (state.historyLogs && state.historyLogs.length > 0) {
-                state.historyLogs.forEach(log => {
-                    let logMs = parseDurationStringToMs(log.durationText);
-                    if (logMs > scanMax) {
-                        scanMax = logMs;
-                        scanDate = log.dateStr;
-                    }
-                });
-            }
-            state.highestRecordMs = scanMax > 0 ? scanMax : 0;
-            state.highestRecordDate = scanDate;
-        }
-
-        delete state.streak;
-        delete state.targetHours;
-        delete state.warriorCoins;
-        delete state.coinUsedToday;
-        delete state.lastCoinUsedTimestamp;
     }
     initFallbackState();
 
@@ -814,66 +403,16 @@
         const chronoDisplay = document.getElementById("chronoDisplay");
         const toggleBtn = document.getElementById("toggleBtn");
         const resetEngineBtn = document.getElementById("resetEngineBtn");
-        const vaultDrawer = document.getElementById("vaultDrawer");
-        const vaultCardsContainer = document.getElementById("vaultCardsContainer");
-        const recordValueDisplay = document.getElementById("recordValueDisplay");
-        const recordAchievedDateDisplay = document.getElementById("recordAchievedDateDisplay");
-        const recordDeltaText = document.getElementById("recordDeltaText");
-        const recordProgressBar = document.getElementById("recordProgressBar");
-        const rankPillDisplay = document.getElementById("rankPillDisplay");
-        const rankDescriptionText = document.getElementById("rankDescriptionText");
-        const currentSessionRawDisplay = document.getElementById("currentSessionRawDisplay");
+        const scaleSlider = document.getElementById("scaleSlider");
+        const statusText = document.getElementById("statusText");
         
-        const successOverlay = document.getElementById("successOverlay");
-        const closeSuccessBtn = document.getElementById("closeSuccessBtn");
-        const successIcon = document.getElementById("successIcon");
-        const successTitle = document.getElementById("successTitle");
-        const successMessage = document.getElementById("successMessage");
-        const timelineDayDisplay = document.getElementById("timelineDayDisplay");
-        const timelineRemainingDisplay = document.getElementById("timelineRemainingDisplay");
-        const timelineDateDisplay = document.getElementById("timelineDateDisplay");
-        
-        const peakDisplay = document.getElementById("peakDisplay");
-        const peakSubText = document.getElementById("peakSubText");
-        const lifetimeFocusDisplay = document.getElementById("lifetimeFocusDisplay");
-        
-        const weeklyDisplay = document.getElementById("weeklyDisplay");
-        const lastWeekDisplay = document.getElementById("lastWeekDisplay");
-        const prevWeek2Display = document.getElementById("prevWeek2Display");
-        
-        const monthlyDisplay = document.getElementById("monthlyDisplay");
-        const lastMonthDisplay = document.getElementById("lastMonthDisplay");
-        const prevMonth2Display = document.getElementById("prevMonth2Display");
-        
-        const authBtn = document.getElementById("authBtn");
-        const exportBtn = document.getElementById("exportBtn");
-        const importBtn = document.getElementById("importBtn");
-        const importFileInput = document.getElementById("importFileInput");
+        const badgeDay = document.getElementById("badgeDay");
+        const badgeRemaining = document.getElementById("badgeRemaining");
+        const badgeDate = document.getElementById("badgeDate");
 
-        async function saveState() {
+        function saveState() {
+            localStorage.setItem("zen_chrono_state", JSON.stringify(state));
             localStorage.setItem("warrior_chrono_state", JSON.stringify(state));
-            if (currentUser) {
-                try {
-                    await setDoc(doc(db, "warrior_users", currentUser.uid), state);
-                } catch (error) {
-                    console.error("Cloud database synchronization interrupted:", error);
-                }
-            }
-        }
-
-        function formatProgressElapsedText(ticks) {
-            let totalMinutes = Math.floor(ticks / 60000);
-            if (totalMinutes < 60) return `${totalMinutes}m`;
-            let hrs = Math.floor(totalMinutes / 60);
-            let mins = totalMinutes % 60;
-            return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
-        }
-
-        function formatAnalyticsTime(ticks) {
-            let totalMinutes = Math.floor(ticks / 60000);
-            let hrs = Math.floor(totalMinutes / 60);
-            let mins = totalMinutes % 60;
-            return `${hrs}h ${mins.toString().padStart(2, '0')}m`;
         }
 
         function formatTimeMatrix(ticks) {
@@ -888,16 +427,6 @@
             return state.accumulatedTime + (Date.now() - state.sessionStartTime);
         }
 
-        function parseDurationStringToMs(timeString) {
-            if (!timeString) return 0;
-            try {
-                let parts = timeString.split(':');
-                return (parseInt(parts[0], 10) * 3600000) + (parseInt(parts[1], 10) * 60000) + (parseInt(parts[2], 10) * 1000);
-            } catch(e) {
-                return 0;
-            }
-        }
-
         function getTrackerTimelineMetrics() {
             let now = new Date();
             let targetNow = new Date(now.getTime());
@@ -907,229 +436,32 @@
             let daysRemaining = Math.ceil((TARGET_DATE.getTime() - targetNow.getTime()) / (1000 * 60 * 60 * 24));
             if (daysRemaining < 0) daysRemaining = 0;
 
-            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             return { currentDayNum, daysRemaining, dateStr: `${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}` };
         }
 
-        function updateAnalyticsPanel() {
-            let logs = state.historyLogs || [];
-            let now = new Date();
-            let currentAnchor = new Date(now.getTime());
-
-            let liveMs = computeCurrentSessionDuration();
-            
-            let finalPeakMs = state.highestRecordMs || 0;
-            let peakDateStr = state.highestRecordDate || "N/A";
-            
-            peakDisplay.textContent = formatAnalyticsTime(finalPeakMs);
-            peakSubText.textContent = `Achieved on ${peakDateStr}`;
-
-            function extractLogDate(logItem) {
-                if(logItem.timestamp) return new Date(logItem.timestamp);
-                return new Date(Date.parse(logItem.dateStr) || Date.now());
-            }
-
-            let lifetimeMs = liveMs;
-            logs.forEach(log => {
-                lifetimeMs += parseDurationStringToMs(log.durationText);
-            });
-            lifetimeFocusDisplay.textContent = formatAnalyticsTime(lifetimeMs);
-
-            function getStartOfWeek(dateObj) {
-                let d = new Date(dateObj.getFullYear(), dateObj.getMonth(), dateObj.getDate());
-                let day = d.getDay();
-                return new Date(d.setDate(d.getDate() - day + (day === 0 ? -6 : 1)));
-            }
-
-            let startOfCurrentWeek = getStartOfWeek(currentAnchor);
-            let startOfLastWeek = new Date(startOfCurrentWeek.getTime() - 7 * 24 * 60 * 60 * 1000);
-            let startOfPrevWeek2 = new Date(startOfCurrentWeek.getTime() - 14 * 24 * 60 * 60 * 1000);
-
-            let currentWeekMs = liveMs;
-            let lastWeekMs = 0;
-            let prevWeek2Ms = 0;
-
-            logs.forEach(log => {
-                let logDate = extractLogDate(log);
-                let logMs = parseDurationStringToMs(log.durationText);
-                if (logDate >= startOfCurrentWeek) {
-                    currentWeekMs += logMs;
-                } else if (logDate >= startOfLastWeek && logDate < startOfCurrentWeek) {
-                    lastWeekMs += logMs;
-                } else if (logDate >= startOfPrevWeek2 && logDate < startOfLastWeek) {
-                    prevWeek2Ms += logMs;
-                }
-            });
-
-            weeklyDisplay.textContent = formatAnalyticsTime(currentWeekMs);
-            lastWeekDisplay.textContent = formatAnalyticsTime(lastWeekMs);
-            prevWeek2Display.textContent = formatAnalyticsTime(prevWeek2Ms);
-
-            let currentMonthIdx = currentAnchor.getMonth();
-            let currentYearVal = currentAnchor.getFullYear();
-
-            let lastMonthDate = new Date(currentYearVal, currentMonthIdx - 1, 1);
-            let prev2MonthDate = new Date(currentYearVal, currentMonthIdx - 2, 1);
-
-            let currentMonthMs = liveMs;
-            let lastMonthMs = 0;
-            let prev2MonthMs = 0;
-
-            logs.forEach(log => {
-                let logDate = extractLogDate(log);
-                let logMs = parseDurationStringToMs(log.durationText);
-                
-                if (logDate.getMonth() === currentMonthIdx && logDate.getFullYear() === currentYearVal) {
-                    currentMonthMs += logMs;
-                } else if (logDate.getMonth() === lastMonthDate.getMonth() && logDate.getFullYear() === lastMonthDate.getFullYear()) {
-                    lastMonthMs += logMs;
-                } else if (logDate.getMonth() === prev2MonthDate.getMonth() && logDate.getFullYear() === prev2MonthDate.getFullYear()) {
-                    prev2MonthMs += logMs;
-                }
-            });
-
-            monthlyDisplay.textContent = formatAnalyticsTime(currentMonthMs);
-            lastMonthDisplay.textContent = formatAnalyticsTime(lastMonthMs);
-            prevMonth2Display.textContent = formatAnalyticsTime(prev2MonthMs);
+        function applyDisplaySize(size) {
+            document.documentElement.style.setProperty('--stopwatch-scale', `${size}px`);
+            scaleSlider.value = size;
         }
 
         function updateUIDisplay() {
             let totalTimeMs = computeCurrentSessionDuration();
             chronoDisplay.textContent = formatTimeMatrix(totalTimeMs);
-            currentSessionRawDisplay.textContent = `Current Session: ${formatProgressElapsedText(totalTimeMs)}`;
-
-            let highestRecord = state.highestRecordMs || 0;
-            recordValueDisplay.textContent = formatProgressElapsedText(highestRecord);
-            recordAchievedDateDisplay.textContent = state.highestRecordDate ? `Achieved on: ${state.highestRecordDate}` : "Achieved on: N/A";
-
-            let recordDeltaPct = 0;
-            if (highestRecord > 0) {
-                recordDeltaPct = Math.min(100, (totalTimeMs / highestRecord) * 100);
-            }
-            recordProgressBar.style.width = `${recordDeltaPct}%`;
-
-            let hasBrokenRecord = totalTimeMs > highestRecord && highestRecord > 0;
-
-            if (hasBrokenRecord) {
-                let surplus = totalTimeMs - highestRecord;
-                recordDeltaText.textContent = `🎉 Record Broken by +${formatProgressElapsedText(surplus)}!`;
-                recordDeltaText.style.color = "var(--accent-green)";
-                
-                if (!popupFiredToday) {
-                    popupFiredToday = true;
-                    let timeline = getTrackerTimelineMetrics();
-                    state.highestRecordMs = totalTimeMs;
-                    state.highestRecordDate = timeline.dateStr;
-                    saveState();
-                    
-                    successIcon.textContent = "🏅";
-                    successTitle.textContent = "New High Score!";
-                    successMessage.textContent = `Unbelievable achievement! You successfully shattered your focus record of ${formatProgressElapsedText(highestRecord)}. Keep accelerating!`;
-                    successOverlay.style.display = "flex";
-                    setTimeout(() => successOverlay.classList.add("show"), 10);
-                }
-            } else if (highestRecord === 0) {
-                recordDeltaText.textContent = "Setting up your first record today!";
-                recordDeltaText.style.color = "var(--accent-blue)";
-            } else {
-                let gap = highestRecord - totalTimeMs;
-                recordDeltaText.textContent = `⚠️ Need ${formatProgressElapsedText(gap)} to break record`;
-                recordDeltaText.style.color = "var(--accent-amber)";
-            }
-
-            let rankClass = "pill-silver";
-            let rankText = "⚪ WARMUP";
-            let rankDesc = "Initiate focus to begin climbing. Keep going!";
-
-            let totalHrsFloat = totalTimeMs / 3600000;
-            let hourFloor = Math.floor(totalHrsFloat);
-
-            const hourlyRanks = [
-                { rank: "⚪ WARMUP (Hr 0)", class: "pill-silver", desc: "You are currently warming up. Maintain concentration!" },
-                { rank: "⚡ INITIATE (Hr 1)", class: "pill-silver", desc: "First hour unlocked! You are finding your rhythm." },
-                { rank: "🟢 DEEP FOCUS (Hr 2)", class: "pill-green", desc: "Fantastic work! The focus pill has evolved into steady progressive green." },
-                { rank: "🧪 ALCHEMIST (Hr 3)", class: "pill-green", desc: "3 hours of deep work. Your brain is perfectly in the zone." },
-                { rank: "🛡️ KNIGHT (Hr 4)", class: "pill-green", desc: "4 hours crossed! Your discipline is building a shield against distractions." },
-                { rank: "🔥 SCHOLAR (Hr 5)", class: "pill-green", desc: "5 hours! Halfway to double digits. Keep this flame alive!" },
-                { rank: "🏹 RANGER (Hr 6)", class: "pill-red", desc: "6 hours! Entering the advanced tier. Stay sharp, aim high." },
-                { rank: "🌪️ TEMPEST (Hr 7)", class: "pill-red", desc: "7 hours! You are a storm of productivity. Unstoppable focus." },
-                { rank: "🌟 WARRIOR (Hr 8)", class: "pill-red", desc: "8 hours of focus! True warrior status achieved." },
-                { rank: "⚔️ CHAMPION (Hr 9)", class: "pill-red", desc: "9 hours! Elite mental endurance. One step away from legendary levels." },
-                { rank: "🔴 BEAST MODE (Hr 10)", class: "pill-red", desc: "Ultimate elite level! You have crossed 10+ legendary hours today!" },
-                { rank: "🌌 OVERLORD (Hr 11)", class: "pill-gold", desc: "11 hours of mastery! You control time and mind completely." },
-                { rank: "👑 IMMORTAL (Hr 12+)", class: "pill-gold", desc: "12+ Hours! You have ascended past mortal limits today." }
-            ];
-
-            if (hourFloor < hourlyRanks.length) {
-                rankText = hourlyRanks[hourFloor].rank;
-                rankClass = hourlyRanks[hourFloor].class;
-                rankDesc = hourlyRanks[hourFloor].desc;
-            } else {
-                rankText = "👑 IMMORTAL (Hr " + hourFloor + "+)";
-                rankClass = "pill-gold";
-                rankDesc = "You have ascended past mortal limits today.";
-            }
-
-            if (hasBrokenRecord) {
-                rankClass = "pill-gold";
-                rankText = "🏅 RECORD BREAKER";
-                rankDesc = "Incredible! You are operating past your limits, breaking records live!";
-            }
-
-            rankPillDisplay.className = `rank-badge-pill ${rankClass}`;
-            rankPillDisplay.textContent = rankText;
-            rankDescriptionText.textContent = rankDesc;
 
             let timeline = getTrackerTimelineMetrics();
-            timelineDayDisplay.textContent = `Day ${timeline.currentDayNum}`;
-            timelineRemainingDisplay.textContent = `(${timeline.daysRemaining} Days Left)`;
-            timelineDateDisplay.textContent = timeline.dateStr;
+            badgeDay.textContent = `Day ${timeline.currentDayNum}`;
+            badgeRemaining.textContent = `${timeline.daysRemaining} Days Left`;
+            badgeDate.textContent = timeline.dateStr;
 
-            updateAnalyticsPanel();
+            if (state.engineActive) {
+                document.body.classList.add("running-mode");
+                statusText.textContent = "DEEP FOCUS ACTIVE";
+            } else {
+                document.body.classList.remove("running-mode");
+                statusText.textContent = "IDLE • READY";
+            }
         }
-
-        authBtn.addEventListener("click", async () => {
-            if (!currentUser) {
-                try {
-                    await signInWithPopup(auth, provider);
-                } catch (error) {
-                    alert("Sign-in failed: " + error.message);
-                }
-            } else {
-                if (confirm("Are you sure you want to log out? Local caching fallback will resume tracking.")) {
-                    signOut(auth);
-                }
-            }
-        });
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                authBtn.textContent = `👤 ${user.displayName.split(' ')[0]}`;
-                authBtn.style.background = "rgba(52, 199, 89, 0.12)";
-                authBtn.style.borderColor = "rgba(52, 199, 89, 0.25)";
-                
-                const userDocRef = doc(db, "warrior_users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-
-                if (userDocSnap.exists()) {
-                    const cloudData = userDocSnap.data();
-                    if ((cloudData.historyLogs && cloudData.historyLogs.length >= (state.historyLogs ? state.historyLogs.length : 0))) {
-                        state = cloudData;
-                        localStorage.setItem("warrior_chrono_state", JSON.stringify(state));
-                    }
-                } else {
-                    await setDoc(userDocRef, state);
-                    alert("Welcome! Your previous focus history was seamlessly uploaded to your secure cloud tracker profile.");
-                }
-            } else {
-                currentUser = null;
-                authBtn.textContent = "🔑 Sign In";
-                authBtn.style.background = "rgba(255, 255, 255, 0.05)";
-                authBtn.style.borderColor = "rgba(255,255,255,0.08)";
-            }
-            updateUIDisplay();
-        });
 
         function evaluateTemporalRollover() {
             let now = new Date();
@@ -1139,73 +471,12 @@
             let currentBoundary = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 1, 0, 0);
 
             if (currentBoundary.getTime() > boundary.getTime()) {
-                let durationLogged = computeCurrentSessionDuration();
-                let timeline = getTrackerTimelineMetrics();
-
-                state.historyLogs.unshift({
-                    day: timeline.currentDayNum - 1, 
-                    dateStr: lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                    durationText: formatTimeMatrix(durationLogged),
-                    timestamp: lastRollover.getTime()
-                });
-
-                if (durationLogged > (state.highestRecordMs || 0)) {
-                    state.highestRecordMs = durationLogged;
-                    state.highestRecordDate = lastRollover.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                }
-
                 state.accumulatedTime = 0;
                 state.sessionStartTime = Date.now();
                 state.lastRolloverTimestamp = Date.now();
-                popupFiredToday = false; 
-                
                 saveState();
                 updateUIDisplay();
-                renderVaultDrawer();
             }
-        }
-
-        function renderVaultDrawer() {
-            vaultCardsContainer.innerHTML = "";
-            if (!state.historyLogs || state.historyLogs.length === 0) {
-                vaultCardsContainer.innerHTML = `<div class="void-message">No historical logs archived inside the Performance Vault yet. Tracking resets daily at 00:01 Midnight.</div>`;
-                return;
-            }
-            
-            let currentPeak = state.highestRecordMs || 0;
-
-            state.historyLogs.forEach(item => {
-                let card = document.createElement("div");
-                card.className = "execution-card";
-                
-                let logDurationMs = parseDurationStringToMs(item.durationText);
-                let hoursVal = logDurationMs / 3600000;
-
-                let dotColor = "#ffffff";
-                let statusLabel = "Warmup Mode";
-                if (logDurationMs >= currentPeak && currentPeak > 0) {
-                    dotColor = "var(--accent-gold)";
-                    statusLabel = "Record Breaker";
-                } else if (hoursVal >= 10.0) {
-                    dotColor = "var(--accent-red)";
-                    statusLabel = "Beast Mode";
-                } else if (hoursVal >= 2.0) {
-                    dotColor = "var(--accent-green)";
-                    statusLabel = "Deep Focus";
-                }
-
-                card.innerHTML = `
-                    <div class="card-top-row">
-                        <span class="card-date">Day ${item.day} — ${item.dateStr}</span>
-                        <span class="vault-pill-dot" style="color: ${dotColor}; background-color: ${dotColor};" title="${statusLabel}"></span>
-                    </div>
-                    <div class="card-metrics-block">
-                        <div class="val">${item.durationText}</div>
-                        <div class="label">Total Focus Duration</div>
-                    </div>
-                `;
-                vaultCardsContainer.appendChild(card);
-            });
         }
 
         function toggleSession() {
@@ -1238,69 +509,30 @@
         });
 
         resetEngineBtn.addEventListener("click", () => {
-            if (confirm("Are you sure you want to reset the current day's focus time? This cannot be undone.")) {
-                state.accumulatedTime = 0; state.engineActive = false; state.sessionStartTime = 0; popupFiredToday = false; 
+            if (confirm("Are you sure you want to reset today's focus time?")) {
+                state.accumulatedTime = 0; 
+                state.engineActive = false; 
+                state.sessionStartTime = 0; 
                 clearInterval(mainLoopInterval);
-                toggleBtn.textContent = "▶ Start Session"; toggleBtn.className = "run-active";
-                saveState(); updateUIDisplay();
+                toggleBtn.textContent = "▶ Start Session"; 
+                toggleBtn.className = "run-active";
+                saveState(); 
+                updateUIDisplay();
             }
         });
 
-        document.getElementById("openHistoryBtn").addEventListener("click", () => {
-            evaluateTemporalRollover(); renderVaultDrawer();
-            vaultDrawer.style.display = "block"; setTimeout(() => vaultDrawer.classList.add("active"), 10);
+        scaleSlider.addEventListener("input", (e) => {
+            applyDisplaySize(e.target.value);
         });
 
-        document.getElementById("closeVaultBtn").addEventListener("click", () => {
-            vaultDrawer.classList.remove("active"); setTimeout(() => vaultDrawer.style.display = "none", 400);
-        });
-
-        closeSuccessBtn.addEventListener("click", () => {
-            successOverlay.classList.remove("show"); setTimeout(() => successOverlay.style.display = "none", 400);
-        });
-
-        // --- SUBTLE VAULT BACKUP & RESTORE LOGIC ---
-        exportBtn.addEventListener("click", () => {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `warrior_focus_backup_${new Date().toISOString().slice(0,10)}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        });
-
-        importBtn.addEventListener("click", () => {
-            importFileInput.click();
-        });
-
-        importFileInput.addEventListener("change", (event) => {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const importedState = JSON.parse(e.target.result);
-                    if (confirm("Are you sure you want to overwrite current stats with this backup file?")) {
-                        state = importedState;
-                        await saveState();
-                        updateUIDisplay();
-                        renderVaultDrawer();
-                        alert("Data successfully restored!");
-                    }
-                } catch (err) {
-                    alert("Invalid backup file format.");
-                }
-            };
-            reader.readAsText(file);
-        });
-
+        // Always reset scale to DEFAULT_SCALE on fresh page load/refresh
+        applyDisplaySize(DEFAULT_SCALE);
         evaluateTemporalRollover();
         updateUIDisplay();
 
         if (state.engineActive) {
-            toggleBtn.textContent = "⏸ Stop Block"; toggleBtn.className = "halt-active";
+            toggleBtn.textContent = "⏸ Stop Block"; 
+            toggleBtn.className = "halt-active";
             mainLoopInterval = setInterval(() => { evaluateTemporalRollover(); updateUIDisplay(); }, 250);
         }
     });
